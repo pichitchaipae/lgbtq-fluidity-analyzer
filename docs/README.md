@@ -30,7 +30,21 @@ Instructions for uploading to GitHub:
 - **[GitHub Ready Guide](github/GITHUB-READY.md)** - Complete setup checklist
 - **[GitHub Setup Tutorial](github/GITHUB-SETUP.md)** - Step-by-step walkthrough
 
-### 📊 Development Reports
+### � Reference Guides
+
+Comprehensive guides and references:
+
+- **[Complete Success Guide](guides/COMPLETE-SUCCESS.md)** - Full achievement summary & next steps
+- **[GitHub Success Guide](guides/GITHUB-SUCCESS.md)** - Post-upload actions & templates
+- **[Social Media Posts](guides/SOCIAL-MEDIA-POSTS.md)** - Ready-to-use social media templates
+- **[Repository Configuration](guides/REPOSITORY-CONFIG-CHECKLIST.md)** - Setup checklist
+- **[Release Notes v1.0.0](guides/RELEASE-NOTES-v1.0.0.md)** - v1.0.0 release documentation
+- **[Visual Config Guide](guides/VISUAL-CONFIG-GUIDE.md)** - Configuration screenshots & steps
+- **[Workflows Status](guides/WORKFLOWS-STATUS.md)** - CI/CD workflow tracking
+- **[Documentation Organization](guides/DOCUMENTATION-ORGANIZED.md)** - File structure explanation
+- **[Push to GitHub Guide](guides/PUSH-TO-GITHUB.md)** - Git push instructions
+
+### �📊 Development Reports
 
 Historical reports from the development process:
 
