@@ -295,3 +295,5 @@ Set `VITE_API_BASE_URL` in `.env` (default assumes `http://localhost:8000/api/v1
 - Output is suited for educational and research purposes only; it is **not** a clinical diagnosis.
 
 > “การยอมรับความแตกต่างคือจุดเริ่มต้นของสังคมที่เท่าเทียม”
+
+<!-- Configuration complete - 2025-10-12 02:30:45 -->
