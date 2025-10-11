@@ -57,7 +57,7 @@
 
 ```bash
 # Clone the repository
-git clone https://github.com/YOUR_USERNAME/lgbtq-fluidity-analyzer.git
+git clone https://github.com/pichitchaipae/lgbtq-fluidity-analyzer.git
 cd lgbtq-fluidity-analyzer
 
 # Start the application
