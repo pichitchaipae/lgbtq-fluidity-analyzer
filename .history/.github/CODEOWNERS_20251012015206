@@ -1,0 +1,31 @@
+# Code Owners
+# These users will be automatically requested for review when someone opens a pull request.
+
+# Default owners for everything in the repo
+*       @YOUR_GITHUB_USERNAME
+
+# Backend code
+/backend/       @YOUR_GITHUB_USERNAME
+/backend/app/   @YOUR_GITHUB_USERNAME
+
+# Frontend code
+/frontend/      @YOUR_GITHUB_USERNAME
+/frontend/src/  @YOUR_GITHUB_USERNAME
+
+# Infrastructure
+/k8s/               @YOUR_GITHUB_USERNAME
+/docker-compose.yml @YOUR_GITHUB_USERNAME
+/.github/           @YOUR_GITHUB_USERNAME
+
+# Documentation
+*.md            @YOUR_GITHUB_USERNAME
+/docs/          @YOUR_GITHUB_USERNAME
+
+# Tests
+/backend/tests/     @YOUR_GITHUB_USERNAME
+/cypress/           @YOUR_GITHUB_USERNAME
+
+# Configuration
+*.yml           @YOUR_GITHUB_USERNAME
+*.yaml          @YOUR_GITHUB_USERNAME
+*.json          @YOUR_GITHUB_USERNAME

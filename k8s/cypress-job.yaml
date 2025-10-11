@@ -1,0 +1,87 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: cypress-e2e-tests
+  namespace: lgbtq-analysis
+  labels:
+    app: cypress-e2e
+    test-type: end-to-end
+  annotations:
+    description: "Cypress E2E testing job for LGBTQ+ Analysis Tool"
+spec:
+  # Keep job history for debugging
+  ttlSecondsAfterFinished: 86400 # 24 hours
+  backoffLimit: 2 # Retry up to 2 times on failure
+  template:
+    metadata:
+      labels:
+        app: cypress-e2e
+        test-type: end-to-end
+    spec:
+      restartPolicy: Never
+      initContainers:
+      # Wait for frontend to be ready
+      - name: wait-for-frontend
+        image: busybox:1.36
+        command:
+        - sh
+        - -c
+        - |
+          echo "Waiting for frontend service to be ready..."
+          until wget -q --spider http://frontend-service:80/health; do
+            echo "Frontend not ready, waiting..."
+            sleep 5
+          done
+          echo "Frontend is ready!"
+      # Wait for backend to be ready
+      - name: wait-for-backend
+        image: busybox:1.36
+        command:
+        - sh
+        - -c
+        - |
+          echo "Waiting for backend service to be ready..."
+          until wget -q --spider http://backend-service:8000/health; do
+            echo "Backend not ready, waiting..."
+            sleep 5
+          done
+          echo "Backend is ready!"
+      containers:
+      - name: cypress
+        image: cypress/included:13.6.0
+        env:
+        - name: CYPRESS_baseUrl
+          value: "http://frontend-service:80"
+        - name: CYPRESS_API_URL
+          value: "http://backend-service:8000"
+        - name: CYPRESS_VIDEO
+          value: "true"
+        - name: CYPRESS_SCREENSHOTS
+          value: "true"
+        - name: CI
+          value: "true"
+        workingDir: /e2e
+        command:
+        - sh
+        - -c
+        - |
+          echo "Starting Cypress E2E tests..."
+          cypress run --browser chrome --headless
+        volumeMounts:
+        - name: cypress-tests
+          mountPath: /e2e
+        - name: cypress-results
+          mountPath: /e2e/results
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "500m"
+          limits:
+            memory: "2Gi"
+            cpu: "1000m"
+      volumes:
+      - name: cypress-tests
+        configMap:
+          name: cypress-config
+      - name: cypress-results
+        emptyDir: {}

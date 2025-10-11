@@ -1,0 +1,214 @@
+"""Business logic for LGBTQ+ sexual fluidity analysis."""
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+from datetime import datetime, timezone
+from typing import Dict, List, Tuple
+
+
+@dataclass(frozen=True)
+class SectionDefinition:
+    """Configuration for a single survey section."""
+
+    key: str
+    questions: Tuple[str, ...]
+    max_score: int
+    weight: float
+
+
+@dataclass
+class SectionScore:
+    """Calculated output for a survey section."""
+
+    raw_score: int
+    max_score: int
+    percentage: float
+    weight: float
+
+
+@dataclass
+class AnalyzerResult:
+    """Structured result returned by the analyzer."""
+
+    timestamp: str
+    overall_score: float
+    interpretation: Dict[str, str]
+    section_scores: Dict[str, SectionScore]
+    insights: List[str]
+    disclaimer: str
+    references: List[str]
+
+
+class LGBTQAnalyzer:
+    """Encapsulates the scoring rules and interpretation logic."""
+
+    def __init__(self) -> None:
+        self.section_definitions: Dict[str, SectionDefinition] = {
+            "media_exposure": SectionDefinition(
+                key="media_exposure",
+                questions=("media1", "media2"),
+                max_score=6,
+                weight=0.20,
+            ),
+            "family_peer_support": SectionDefinition(
+                key="family_peer_support",
+                questions=("family1", "family2", "family3"),
+                max_score=6,
+                weight=0.25,
+            ),
+            "online_community": SectionDefinition(
+                key="online_community",
+                questions=("community1", "community2"),
+                max_score=4,
+                weight=0.15,
+            ),
+            "cultural_linguistic": SectionDefinition(
+                key="cultural_linguistic",
+                questions=("culture1", "culture2"),
+                max_score=5,
+                weight=0.15,
+            ),
+            "self_exploration": SectionDefinition(
+                key="self_exploration",
+                questions=("exploration1", "exploration2"),
+                max_score=4,
+                weight=0.20,
+            ),
+            "school_environment": SectionDefinition(
+                key="school_environment",
+                questions=("school1",),
+                max_score=2,
+                weight=0.05,
+            ),
+        }
+
+        self._interpretation_ranges: Tuple[Tuple[int, int, str, str, str], ...] = (
+            (0, 20, "minimal", "มีการเปิดรับและสำรวจน้อยมาก", "\U0001F319"),
+            (21, 40, "low", "มีการเปิดรับและสำรวจในระดับต่ำ", "\U0001F331"),
+            (41, 60, "moderate", "มีการเปิดรับและสำรวจในระดับปานกลาง", "\U0001F98B"),
+            (61, 80, "high", "มีการเปิดรับและสำรวจในระดับสูง", "\U0001F308"),
+            (81, 100, "very_high", "มีการเปิดรับและสำรวจในระดับสูงมาก", "\u2728"),
+        )
+
+    def analyze(self, answers: Dict[str, int]) -> AnalyzerResult:
+        """Validate user input and build the result payload."""
+
+        self._validate_input(answers)
+        section_scores = self._calculate_section_scores(answers)
+        overall_score = self._calculate_weighted_score(section_scores)
+        interpretation = self._interpret_overall(overall_score)
+        insights = self._generate_insights(section_scores, overall_score)
+
+        return AnalyzerResult(
+            timestamp=datetime.now(timezone.utc).isoformat(),
+            overall_score=overall_score,
+            interpretation=interpretation,
+            section_scores=section_scores,
+            insights=insights,
+            disclaimer=self._disclaimer(),
+            references=self._references(),
+        )
+
+    def _validate_input(self, answers: Dict[str, int]) -> None:
+        required = {
+            key
+            for section in self.section_definitions.values()
+            for key in section.questions
+        }
+
+        missing = required.difference(answers.keys())
+        if missing:
+            raise ValueError(f"Missing answers for: {', '.join(sorted(missing))}")
+
+        for key, value in answers.items():
+            if not isinstance(value, int):
+                raise ValueError(f"Answer for {key} must be an integer")
+            if value < 0 or value > 4:
+                raise ValueError(f"Answer for {key} must be within 0-4. Received {value}")
+
+    def _calculate_section_scores(self, answers: Dict[str, int]) -> Dict[str, SectionScore]:
+        scores: Dict[str, SectionScore] = {}
+        for section_key, definition in self.section_definitions.items():
+            raw_score = sum(answers.get(question, 0) for question in definition.questions)
+            percentage = round((raw_score / definition.max_score) * 100, 1)
+            scores[section_key] = SectionScore(
+                raw_score=raw_score,
+                max_score=definition.max_score,
+                percentage=percentage,
+                weight=definition.weight,
+            )
+        return scores
+
+    def _calculate_weighted_score(self, section_scores: Dict[str, SectionScore]) -> float:
+        weighted_sum = sum(score.percentage * score.weight for score in section_scores.values())
+        total_weight = sum(score.weight for score in section_scores.values())
+        return round(weighted_sum / total_weight, 1) if total_weight else 0.0
+
+    def _interpret_overall(self, overall_score: float) -> Dict[str, str]:
+        for min_score, max_score, level, description, emoji in self._interpretation_ranges:
+            if min_score <= overall_score <= max_score:
+                return {
+                    "level": level,
+                    "description": description,
+                    "emoji": emoji,
+                    "range": f"{min_score}-{max_score}%",
+                }
+        return {
+            "level": "unknown",
+            "description": "ไม่สามารถแปลผลได้",
+            "emoji": "\u2753",
+            "range": "N/A",
+        }
+
+    def _generate_insights(self, section_scores: Dict[str, SectionScore], overall_score: float) -> List[str]:
+        thai_labels = {
+            "media_exposure": "การเปิดรับสื่อ",
+            "family_peer_support": "การสนับสนุนจากครอบครัวและเพื่อน",
+            "online_community": "การมีส่วนร่วมในชุมชนออนไลน์",
+            "cultural_linguistic": "ความเข้าใจด้านวัฒนธรรมและภาษา",
+            "self_exploration": "การสำรวจตัวตน",
+            "school_environment": "สภาพแวดล้อมทางการศึกษา",
+        }
+
+        sorted_sections = sorted(section_scores.items(), key=lambda item: item[1].percentage, reverse=True)
+        highest_key, highest_score = sorted_sections[0]
+        lowest_key, lowest_score = sorted_sections[-1]
+
+        insights: List[str] = []
+        if highest_score.percentage >= 70:
+            insights.append(
+                f"\U0001F31F ปัจจัยที่โดดเด่นที่สุดคือ '{thai_labels[highest_key]}' ด้วยคะแนน {highest_score.percentage}%"
+            )
+        if lowest_score.percentage <= 30:
+            insights.append(
+                f"\U0001F4A1 ปัจจัยที่ควรให้ความสำคัญเพิ่มเติมคือ '{thai_labels[lowest_key]}' ด้วยคะแนน {lowest_score.percentage}%"
+            )
+
+        if overall_score >= 80:
+            insights.append("\U0001F3F3\uFE0F\u200D\U0001F308 คุณเปิดกว้างและสำรวจความหลากหลายทางเพศในระดับสูง")
+        elif overall_score >= 60:
+            insights.append("\U0001F98B คุณกำลังอยู่ในช่วงสำรวจและเรียนรู้เกี่ยวกับตัวเอง ซึ่งเป็นเรื่องปกติและงดงาม")
+        elif overall_score >= 40:
+            insights.append("\U0001F331 คุณเริ่มต้นเปิดรับในบางด้าน การค้นหาตัวเองต้องใช้เวลา")
+        else:
+            insights.append("\U0001F319 คุณอาจยังไม่สนใจประเด็นนี้ในตอนนี้ และนั่นก็เป็นเรื่องที่ยอมรับได้")
+
+        return insights
+
+    @staticmethod
+    def _disclaimer() -> str:
+        return (
+            "ผลลัพธ์นี้เป็นแนวโน้มเชิงสถิติจากการตอบแบบสอบถาม ไม่ใช่การวินิจฉัยทางการแพทย์ "
+            "หรือการระบุตัวตนที่แท้จริง ไม่มีการจัดเก็บข้อมูลส่วนบุคคลใด ๆ และใช้เพื่อการศึกษาเท่านั้น"
+        )
+
+    @staticmethod
+    def _references() -> List[str]:
+        return [
+            "Diamond, L. M. (2008). Sexual Fluidity: Understanding Women's Love and Desire. Harvard University Press.",
+            "Bronfenbrenner, U. (1979). The Ecology of Human Development. Harvard University Press.",
+            "Field, A. (2018). Discovering statistics using IBM SPSS statistics (5th ed.). Sage Publications.",
+            "Kinsey, A. C., Pomeroy, W. B., & Martin, C. E. (1948). Sexual Behavior in the Human Male. W.B. Saunders.",
+            "Add Health Study. University of North Carolina at Chapel Hill.",
+            "Russell, S. T. & Fish, J. N. (2016). Mental Health in LGBT Youth. Annual Review of Clinical Psychology, 12, 465-487.",
+        ]

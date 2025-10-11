@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: lgbtq-analysis
+  labels:
+    app: lgbtq-sexual-fluidity
+    environment: production
+    compliance: privacy-first
+  annotations:
+    description: "LGBTQ+ Sexual Fluidity Analysis Tool - Privacy-compliant educational research platform"
+    sdg-alignment: "SDG 3 (Health), SDG 5 (Gender Equality), SDG 10 (Reduced Inequalities)"
