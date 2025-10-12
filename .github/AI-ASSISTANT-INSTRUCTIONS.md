@@ -77,6 +77,81 @@ GEMINI_API_KEY=${GEMINI_API_KEY}
 
 ---
 
+## 📁 File Organization Rules
+
+### Documentation File Structure
+
+**CRITICAL**: Keep documentation organized! Random .md files in root cause clutter.
+
+**Correct Locations for .md files**:
+
+| File Type | Correct Location | Examples |
+|-----------|------------------|----------|
+| GitHub standards | Root directory | README.md, CONTRIBUTING.md, CODE_OF_CONDUCT.md, SECURITY.md, LICENSE.md |
+| Deployment guides | `docs/deployment/` | AZURE-DEPLOYMENT.md, K8S-DEPLOYMENT.md |
+| How-to guides | `docs/guides/` | SETUP-GUIDE.md, API-GUIDE.md |
+| Reports & summaries | `docs/reports/` | SECURITY-INCIDENT-REPORT.md, RELEASE-NOTES.md |
+| Architecture docs | `docs/` | ARCHITECTURE.md, DATABASE-SCHEMA.md |
+| GitHub workflows | `.github/` | PULL_REQUEST_TEMPLATE.md, ISSUE_TEMPLATE.md |
+| Temporary/working | Root (move later) | Only during active work, must be moved |
+
+**Wrong Locations** (avoid these):
+- ❌ `AZURE-SETUP-COMPLETE.md` in root → Move to `docs/deployment/`
+- ❌ `DEPLOYMENT-STATUS.md` in root → Move to `docs/deployment/`
+- ❌ `SECURITY-INCIDENT-3.md` in root → Move to `docs/reports/`
+- ❌ `KEY-ROTATION-CHECKLIST.md` in root → Move to `docs/deployment/`
+
+### When Creating New .md Files
+
+**AI Assistant MUST**:
+
+1. ✅ **Determine correct location FIRST**
+   - Is it a deployment guide? → `docs/deployment/`
+   - Is it a how-to guide? → `docs/guides/`
+   - Is it a report/summary? → `docs/reports/`
+   - Is it general docs? → `docs/`
+   - Is it a GitHub standard? → Root (only 5 allowed)
+
+2. ✅ **Create in the correct location immediately**
+   ```python
+   # Good:
+   create_file("docs/deployment/azure-setup.md")
+   
+   # Bad:
+   create_file("AZURE-SETUP.md")  # Root is wrong!
+   ```
+
+3. ✅ **If unsure, ask the user**
+   ```
+   "I'm creating a deployment guide. Should I place it in:
+   - docs/deployment/ (recommended)
+   - docs/guides/
+   - Or another location?"
+   ```
+
+4. ✅ **Update all references after moving**
+   - Check README.md links
+   - Check other documentation cross-references
+   - Update relative paths
+
+### When Organizing Existing Files
+
+**If root directory has .md files that shouldn't be there**:
+
+1. List the files and their suggested locations
+2. Ask user: "Should I move these to docs/?"
+3. After moving, update all references
+4. Commit with clear message: "docs: Organize documentation files"
+
+### Exception: Temporary Working Files
+
+**Only these can temporarily stay in root**:
+- Files being actively edited/reviewed
+- Files user explicitly requests in root
+- Must be moved to docs/ when work is complete
+
+---
+
 ## 📁 Safe Locations for Real Secrets
 
 ### Gitignored Files (Check `.gitignore` first!)
@@ -110,11 +185,17 @@ Before suggesting any commit, verify:
 - [ ] Documentation references safe locations
 - [ ] `.gitignore` includes secret file patterns
 - [ ] User reminded to keep secrets safe
+- [ ] **New .md files created in correct docs/ subdirectory**
+- [ ] **No random .md files left in root directory**
+- [ ] **All documentation cross-references updated**
 
 **Command to check**:
 ```bash
 # Search for potential secrets before commit
 git diff --cached | grep -i "api[_-]key\|secret\|password\|token" | grep -v "placeholder\|example\|\[YOUR"
+
+# Check for .md files in root that should be moved
+git ls-files "*.md" | grep -v "README\|CONTRIBUTING\|CODE_OF_CONDUCT\|SECURITY\|LICENSE"
 ```
 
 ---

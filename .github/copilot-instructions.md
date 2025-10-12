@@ -57,12 +57,37 @@ Never (unsafe):
 - Commit messages
 - Code comments
 
+## File Organization Rules
+
+**Documentation files (.md) belong in organized locations:**
+
+### Correct Locations:
+- `docs/` - General documentation
+- `docs/deployment/` - Deployment guides
+- `docs/guides/` - How-to guides
+- `docs/reports/` - Reports and summaries
+- `.github/` - GitHub-specific files (workflows, templates)
+- Root - ONLY: README.md, CONTRIBUTING.md, CODE_OF_CONDUCT.md, SECURITY.md, LICENSE.md
+
+### Wrong Location:
+- ❌ Random .md files in project root
+- ❌ Documentation mixed with code
+- ❌ Guides in root directory
+
+**When creating .md files**:
+1. ✅ Create in appropriate docs/ subdirectory
+2. ✅ If unsure, ask user for preferred location
+3. ✅ Move root .md files to docs/ when organizing
+4. ✅ Update any references/links after moving
+
 ## Quick Checks Before Suggesting Code
 
 - [ ] No hardcoded secrets?
 - [ ] Using environment variables?
 - [ ] Documentation uses placeholders?
 - [ ] User reminded about `.env` setup?
+- [ ] **New .md files created in correct location (docs/ folder)?**
+- [ ] **Links updated if files were moved?**
 
 ## More Information
 
@@ -70,4 +95,6 @@ Full security guidelines: `.github/AI-ASSISTANT-INSTRUCTIONS.md`
 
 ---
 
-**Remember**: Prevention is better than detection! 🔐
+**Remember**: 
+- 🔐 Prevention is better than detection!
+- � Organization matters - keep docs in docs/!
