@@ -225,9 +225,9 @@ Contributors will be recognized in:
 
 ## 📞 Questions?
 
-- Open a [Discussion](https://github.com/YOUR_USERNAME/lgbtq-fluidity-analyzer/discussions)
-- Join our community chat (if available)
-- Email: [maintainer email]
+- 💬 Open a [Discussion](https://github.com/pichitchaipae/lgbtq-fluidity-analyzer/discussions)
+- 🐛 Report a [Bug or Feature Request](https://github.com/pichitchaipae/lgbtq-fluidity-analyzer/issues)
+- 📧 Email: [jao.pichitchai@gmail.com](mailto:jao.pichitchai@gmail.com)
 
 ## 🌈 Code of Conduct
 

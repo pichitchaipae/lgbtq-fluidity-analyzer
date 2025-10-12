@@ -25,7 +25,7 @@ If you discover a security vulnerability, please follow these steps:
 Security vulnerabilities should be reported privately to protect users.
 
 ### 2. Report Privately
-Email security reports to: **[INSERT YOUR EMAIL]**
+Email security reports to: **[jao.pichitchai@gmail.com](mailto:jao.pichitchai@gmail.com)**
 
 Include:
 - Description of the vulnerability

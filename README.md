@@ -93,7 +93,7 @@ That's it! 🎉
   - [🚀 Quick Start](#-quick-start)
     - [Prerequisites](#prerequisites)
     - [Option 1: Docker (Recommended)](#option-1-docker-recommended)
-  - [📚 Quick Links](#-quick-links)
+  - [📚 Documentation](#-documentation)
   - [Contents](#contents)
   - [Architecture](#architecture)
     - [Backend Service](#backend-service)
@@ -111,7 +111,17 @@ That's it! 🎉
   - [Testing](#testing)
   - [Deployment](#deployment)
   - [Customization](#customization)
+  - [🆕 What's New in v2.0](#-whats-new-in-v20)
+    - [Advanced Two-Way ANOVA Analysis](#advanced-two-way-anova-analysis)
+    - [AI-Powered Insights (Optional)](#ai-powered-insights-optional)
+    - [Dual Analysis Modes](#dual-analysis-modes)
   - [Ethics \& Privacy](#ethics--privacy)
+  - [API Documentation](#api-documentation)
+    - [POST /api/v2/analysis](#post-apiv2analysis)
+  - [📧 Contact \& Support](#-contact--support)
+    - [Get Help](#get-help)
+    - [Maintainer](#maintainer)
+    - [Security Issues](#security-issues)
 
 ## Architecture
 
@@ -355,6 +365,27 @@ Set `VITE_API_BASE_URL` in `.env` (default assumes `http://localhost:8000/api/v1
 }
 ```
 
-> “การยอมรับความแตกต่างคือจุดเริ่มต้นของสังคมที่เท่าเทียม”
+---
+
+## 📧 Contact & Support
+
+### Get Help
+
+- 💬 **Discussions**: [GitHub Discussions](https://github.com/pichitchaipae/lgbtq-fluidity-analyzer/discussions) - Ask questions, share ideas
+- 🐛 **Issues**: [Report bugs or request features](https://github.com/pichitchaipae/lgbtq-fluidity-analyzer/issues)
+- 📖 **Documentation**: [Full documentation](docs/README.md)
+
+### Maintainer
+
+- **Email**: [jao.pichitchai@gmail.com](mailto:jao.pichitchai@gmail.com)
+- **GitHub**: [@pichitchaipae](https://github.com/pichitchaipae)
+
+### Security Issues
+
+For security vulnerabilities, please email [jao.pichitchai@gmail.com](mailto:jao.pichitchai@gmail.com) directly or see our [Security Policy](SECURITY.md).
+
+---
+
+> "การยอมรับความแตกต่างคือจุดเริ่มต้นของสังคมที่เท่าเทียม"
 
 <!-- Configuration complete - 2025-10-12 02:30:45 -->
