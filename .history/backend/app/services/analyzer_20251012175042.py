@@ -160,7 +160,7 @@ class LGBTQAnalyzer:
                 }
         return {
             "level": "unknown",
-            "description": "Unable to interpret / ไม่สามารถแปลผลได้",
+            "description": "ไม่สามารถแปลผลได้",
             "emoji": "\u2753",
             "range": "N/A",
         }
