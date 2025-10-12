@@ -13,6 +13,9 @@ export type SurveyAnswers = {
   school1: number;
 };
 
+// AnalysisRequest is the same as SurveyAnswers (for API compatibility)
+export type AnalysisRequest = SurveyAnswers;
+
 export type SectionScore = {
   raw_score: number;
   max_score: number;
