@@ -67,11 +67,11 @@ Value: [Your current key]
 3. Copy and paste the name and value exactly
 
 **Your secrets should be:**
-- ✅ AZURE_CLIENT_ID
-- ✅ AZURE_TENANT_ID
-- ✅ AZURE_SUBSCRIPTION_ID
-- ✅ AZURE_CLIENT_SECRET (from script output)
-- ✅ GEMINI_API_KEY (use: AIzaSyD0Ao3JtDF4zNIitWyMUgKjLfTfgTXI-tA)
+- ✅ AZURE_CLIENT_ID (from script output)
+- ✅ AZURE_TENANT_ID (from script output)
+- ✅ AZURE_SUBSCRIPTION_ID (from script output)
+- ✅ AZURE_CLIENT_SECRET (from script output - KEEP SECRET)
+- ✅ GEMINI_API_KEY (your current Gemini API key - check .azure-secrets.local.txt)
 - ⚠️ OPENAI_API_KEY (optional - if you want to support OpenAI too)
 
 ---
