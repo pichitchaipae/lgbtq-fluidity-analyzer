@@ -88,3 +88,32 @@ class AIInterpreter:
         4.  Keep the explanation for each language concise (under 200 words).
         5.  {lang_instructions.get(language, lang_instructions['th'])}
         """
+
+    def chat(self, prompt: str, language: str = "en") -> str:
+        """
+        Get a conversational AI response for chatbot interactions.
+        
+        Args:
+            prompt: Full prompt including context and user message
+            language: Language code ('th' or 'en')
+        
+        Returns:
+            AI-generated response text
+        """
+        try:
+            response = self.client.chat.completions.create(
+                model="gpt-4o-mini",  # Cost-effective model for chat
+                messages=[
+                    {"role": "system", "content": "You are a supportive educational assistant helping users understand their personal growth and identity survey results."},
+                    {"role": "user", "content": prompt}
+                ],
+                temperature=0.7,
+                max_tokens=600,
+            )
+            
+            if not response.choices or not response.choices[0].message.content:
+                raise AIServiceError("AI response was empty or invalid.")
+            
+            return response.choices[0].message.content.strip()
+        except Exception as e:
+            raise AIServiceError(f"OpenAI chatbot request failed: {str(e)}")

@@ -131,3 +131,75 @@ Important Notes:
 - Social acceptance refers to acceptance from family, friends, and community
 - The interaction effect shows how media and social factors work together
 """
+
+    def chat(self, prompt: str, language: str = "en") -> str:
+        """
+        Get a conversational AI response for chatbot interactions.
+        
+        Args:
+            prompt: Full prompt including context and user message
+            language: Language code ('th' or 'en')
+        
+        Returns:
+            AI-generated response text
+        """
+        try:
+            response = self.model.generate_content(
+                prompt,
+                generation_config=genai.types.GenerationConfig(
+                    temperature=0.7,  # Balanced temperature for factual yet warm responses
+                    max_output_tokens=2048,  # เพิ่มจาก 600 -> 2048 เพื่อหลีกเลี่ยง MAX_TOKENS (finish_reason=2)
+                ),
+                safety_settings=[
+                    {
+                        "category": "HARM_CATEGORY_HARASSMENT",
+                        "threshold": "BLOCK_NONE",
+                    },
+                    {
+                        "category": "HARM_CATEGORY_HATE_SPEECH",
+                        "threshold": "BLOCK_NONE",
+                    },
+                    {
+                        "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+                        "threshold": "BLOCK_NONE",
+                    },
+                    {
+                        "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
+                        "threshold": "BLOCK_NONE",
+                    },
+                ]
+            )
+            
+            # จัดการกรณีไม่มี candidates หรือ parts (ตาม GitHub issue #373)
+            candidates = getattr(response, "candidates", []) or []
+            if not candidates:
+                raise GeminiServiceError("No candidates returned. The request may have been blocked.")
+            
+            candidate = candidates[0]
+            finish_reason = getattr(candidate, "finish_reason", None)
+            content = getattr(candidate, "content", None)
+            parts = getattr(content, "parts", []) if content else []
+            
+            # เช็กว่ามี parts หรือไม่ (หลีกเลี่ยง response.text ที่ใช้ไม่ได้)
+            if not parts:
+                safety_ratings = getattr(candidate, "safety_ratings", []) or []
+                safety_info = [f"{r.category}: {r.probability}" for r in safety_ratings]
+                raise GeminiServiceError(
+                    f"No content parts returned. finish_reason={finish_reason}. "
+                    f"Safety ratings: {', '.join(safety_info) if safety_info else 'None'}. "
+                    f"Try increasing max_output_tokens or shortening the prompt."
+                )
+            
+            # รวมข้อความจากทุก parts
+            text = "".join([getattr(p, "text", "") for p in parts])
+            
+            if not text or not text.strip():
+                raise GeminiServiceError(
+                    f"Empty response from Gemini. finish_reason={finish_reason}"
+                )
+            
+            return text.strip()
+        except GeminiServiceError:
+            raise
+        except Exception as e:
+            raise GeminiServiceError(f"Gemini AI chatbot request failed: {str(e)}")

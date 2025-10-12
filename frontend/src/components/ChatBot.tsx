@@ -103,11 +103,32 @@ export const ChatBot: React.FC<ChatBotProps> = ({ surveyResult, language }) => {
       setSuggestions(response.suggestions);
     } catch (err) {
       console.error('Chatbot error:', err);
-      setError(
-        language === 'th'
-          ? 'เกิดข้อผิดพลาดในการส่งข้อความ กรุณาลองใหม่อีกครั้ง'
-          : 'An error occurred while sending your message. Please try again.'
-      );
+      
+      // แสดง error message ที่ละเอียดกว่า
+      let errorMessage = language === 'th'
+        ? 'เกิดข้อผิดพลาดในการส่งข้อความ กรุณาลองใหม่อีกครั้ง'
+        : 'An error occurred while sending your message. Please try again.';
+      
+      if (err instanceof Error) {
+        if (err.message.includes('timeout')) {
+          errorMessage = language === 'th'
+            ? '⏱️ การประมวลผลใช้เวลานานเกินไป กรุณาลองใหม่อีกครั้ง'
+            : '⏱️ Request timeout. Please try again.';
+        } else if (err.message.includes('Network Error')) {
+          errorMessage = language === 'th'
+            ? '🌐 ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้ กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ต'
+            : '🌐 Network error. Please check your internet connection.';
+        } else if (err.message) {
+          // แสดง error message จาก server
+          errorMessage = `❌ ${err.message}`;
+        }
+      }
+      
+      setError(errorMessage);
+      
+      // ลบข้อความของ user ที่ส่งไปแล้วเพื่อให้ลองส่งใหม่ได้
+      setMessages((prev) => prev.filter(msg => msg.id !== userMessage.id));
+      setInputMessage(messageText); // คืนค่าข้อความกลับไปให้ user แก้ไขได้
     } finally {
       setIsLoading(false);
     }
