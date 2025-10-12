@@ -32,7 +32,7 @@ Key Name: LGBTQ+ Sexual Fluidity Analyzer v2.0
 Project:  gen-lang-client-0589294331
 Created:  October 12, 2025
 Tier:     Tier 1 (Free Forever)
-Key:      AIzaSyB9dKdmhUFXzZ3-WIVmogqZ6frOaTpO5E4
+Key:      [REDACTED - Obtain your own key from Google AI Studio]
 ```
 
 ### Free Tier Limits
@@ -92,7 +92,7 @@ Added:
 ```bash
 # backend/.env
 AI_PROVIDER=gemini
-GEMINI_API_KEY=AIzaSyB9dKdmhUFXzZ3-WIVmogqZ6frOaTpO5E4
+GEMINI_API_KEY=your_actual_gemini_api_key_here
 OPENAI_API_KEY=  # Optional fallback
 ```
 
@@ -260,7 +260,7 @@ To switch back to Gemini:
 ```bash
 # backend/.env
 AI_PROVIDER=gemini
-GEMINI_API_KEY=AIzaSyB9dKdmhUFXzZ3-WIVmogqZ6frOaTpO5E4
+GEMINI_API_KEY=your_actual_gemini_api_key_here
 ```
 
 ### Caching System

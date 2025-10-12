@@ -12,8 +12,8 @@
 
 **Problem:**
 - Your Google Gemini API key was publicly visible on GitHub
-- Location: `.history/backend/.env_20251012173042`
-- Exposed Key: `AIzaSyB9dKdmhUFXzZ3-WIVmogqZ6frOaTpO5E4`
+- Location: `.history/backend/.env_*` (multiple files)
+- Exposed Key: `[REDACTED - Key has been revoked]`
 
 **Solution Applied:**
 ✅ Removed entire `.history/` folder (90 files containing sensitive data)  
@@ -25,7 +25,7 @@
 You **MUST** revoke the old key and create a new one:
 
 1. **Revoke old key:** https://aistudio.google.com/app/apikeys
-   - Find: `AIzaSyB9dKdmhUFXzZ3-WIVmogqZ6frOaTpO5E4`
+   - Find the exposed key in your project list
    - Click **Delete** or **Revoke**
 
 2. **Generate new key:**

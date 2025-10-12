@@ -233,8 +233,8 @@ The only blocker is AI API credits. Once you add $5-10 to your OpenAI account, y
 ### **Environment Variables:**
 ```env
 AI_PROVIDER=openai  # Change back to "openai" after adding credits
-GEMINI_API_KEY=AIzaSyA_lnw5V8kjKTtpmOv9gj4_bhasknyXNOg  # (has safety filter issues)
-OPENAI_API_KEY=sk-proj-duqW...pgevEf00A  # (needs credits added)
+GEMINI_API_KEY=your_gemini_api_key_here  # Get from Google AI Studio
+OPENAI_API_KEY=your_openai_api_key_here  # Get from OpenAI Platform
 ```
 
 ### **To Switch to OpenAI After Adding Credits:**

@@ -67,7 +67,7 @@ make down
 
 3. **Set your API key**:
    ```powershell
-   $env:GEMINI_API_KEY = "AIzaSyA_lnw5V8kjKTtpmOv9gj4_bhasknyXNOg"
+   $env:GEMINI_API_KEY = "your_actual_gemini_api_key"
    ```
 
 ### Deploy to Kubernetes

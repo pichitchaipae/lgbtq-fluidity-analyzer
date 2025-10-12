@@ -8,8 +8,8 @@
 ## ✅ COMPLETED TASKS
 
 ### 1. 🔐 Security Issue - RESOLVED
-- ✅ Old API key: `AIzaSyB9dKdmhUFXzZ3-WIVmogqZ6frOaTpO5E4` (exposed)
-- ✅ New API key: `AIzaSyA_lnw5V8kjKTtpmOv9gj4_bhasknyXNOg` (installed)
+- ✅ Old API key: `[REVOKED - Previously Exposed]` (revoked at Google Cloud Console)
+- ✅ New API key: `[HIDDEN - Set via Environment Variable]` (never commit actual keys)
 - ✅ `.history/` folder removed from GitHub
 - ✅ `.gitignore` updated to prevent future exposure
 - ✅ Backend `.env` updated with new key
@@ -119,7 +119,7 @@ All security fixes are now live on GitHub! 🎉
 **Verify .env file:**
 ```bash
 cat backend/.env
-# Should show: GEMINI_API_KEY=AIzaSyA_lnw5V8kjKTtpmOv9gj4_bhasknyXNOg
+# Should show: GEMINI_API_KEY=your_actual_api_key_here
 ```
 
 ---

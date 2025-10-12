@@ -123,7 +123,7 @@ Select `advanced-analysis-v2.cy.js` to test AI mode
 
 | Setting | Value |
 |---------|-------|
-| **API Key** | AIzaSyB9dKdmhUFXzZ3-WIVmogqZ6frOaTpO5E4 |
+| **API Key** | [Set in backend/.env file - do not commit] |
 | **Model** | gemini-2.5-flash (stable) |
 | **Provider** | Google Gemini (primary) |
 | **Fallback** | OpenAI (optional) |

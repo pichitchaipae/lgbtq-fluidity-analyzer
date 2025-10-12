@@ -11,8 +11,8 @@
 ## 📋 What Happened
 
 Your Google Gemini API key was accidentally exposed in the GitHub repository at:
-- **URL:** https://github.com/pichitchaipae/lgbtq-fluidity-analyzer/blob/8c95b2e7828d5dc3b9f24d70781d4597892cda7d/.history/backend/.env_20251012173042
-- **Exposed Key:** `AIzaSyB9dKdmhUFXzZ3-WIVmogqZ6frOaTpO5E4`
+- **URL:** https://github.com/pichitchaipae/lgbtq-fluidity-analyzer/blob/[REDACTED]
+- **Exposed Key:** `[REDACTED - Key has been revoked]`
 - **Project:** lgbtq (id: gen-lang-client-0589294331)
 
 ---
@@ -36,7 +36,7 @@ Your Google Gemini API key was accidentally exposed in the GitHub repository at:
 
 ### Step 1: Revoke the Old Key
 1. Go to: https://aistudio.google.com/app/apikeys
-2. Find the key: `AIzaSyB9dKdmhUFXzZ3-WIVmogqZ6frOaTpO5E4`
+2. Find the exposed key in your project
 3. Click **Delete** or **Revoke**
 
 ### Step 2: Generate New Key
@@ -49,10 +49,7 @@ Your Google Gemini API key was accidentally exposed in the GitHub repository at:
 # Edit backend/.env
 nano backend/.env
 
-# Replace this line:
-GEMINI_API_KEY=AIzaSyB9dKdmhUFXzZ3-WIVmogqZ6frOaTpO5E4
-
-# With your new key:
+# Replace the old exposed key with your new key:
 GEMINI_API_KEY=YOUR_NEW_KEY_HERE
 ```
 
