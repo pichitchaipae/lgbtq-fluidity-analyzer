@@ -48,6 +48,13 @@ help:
 	@echo "  make prod-push     - Push images to registry"
 	@echo "  make prod-deploy   - Full production deployment"
 	@echo ""
+	@echo "CI/CD Maintenance:"
+	@echo "  make fix-eslint-env     - Patch Node.js globals in .cjs files"
+	@echo "  make sync-frontend-lock - Sync package-lock.json"
+	@echo "  make frontend-ci-check  - Validate CI install (dry-run)"
+	@echo "  make audit-fix          - Auto-fix npm audit issues"
+	@echo "  make ci-fix-all         - Run all CI fixes (one-shot)"
+	@echo ""
 	@echo "Cleanup:"
 	@echo "  make clean         - Remove containers and volumes"
 	@echo "  make clean-all     - Remove everything including images"
@@ -209,3 +216,41 @@ k8s-logs:
 prod-deploy: test prod-build prod-push k8s-deploy
 	@echo "🎉 Production deployment complete!"
 	@echo "🌐 Check your ingress URL for the application"
+
+# ============================================================
+# CI/CD Maintenance Commands
+# ============================================================
+
+FRONTEND := frontend
+CJS_FILES := $(FRONTEND)/.eslintrc.cjs $(FRONTEND)/postcss.config.cjs $(FRONTEND)/tailwind.config.cjs
+
+## fix-eslint-env: Patch Node.js globals in config .cjs files
+fix-eslint-env:
+	@echo "🔧 Patching ESLint environment in .cjs files..."
+	@node -e "const fs=require('fs'); const files=process.argv.slice(1); files.forEach(f=>{ if(fs.existsSync(f)){ const s=fs.readFileSync(f,'utf8'); if(!s.startsWith('/* eslint-env node */')){ fs.writeFileSync(f, '/* eslint-env node */\\n'+s); console.log('✓ Patched', f); } else { console.log('✓ OK', f); } } else { console.log('⚠ Missing', f); }});" $(CJS_FILES)
+	@git add $(CJS_FILES) || true
+
+## sync-frontend-lock: Sync lockfile so npm ci passes in CI
+sync-frontend-lock:
+	@echo "🔄 Syncing frontend lockfile..."
+	cd $(FRONTEND) && npm install
+	git add $(FRONTEND)/package-lock.json
+	@echo "✓ Lockfile synced"
+
+## frontend-ci-check: Validate CI install locally without changing files
+frontend-ci-check:
+	@echo "🧪 Validating CI install (dry-run)..."
+	cd $(FRONTEND) && npm ci --dry-run
+	@echo "✓ CI validation passed"
+
+## audit-fix: Try to auto-remediate npm audit issues
+audit-fix:
+	@echo "🔒 Attempting to fix npm audit issues..."
+	cd $(FRONTEND) && npm audit fix || true
+	@echo "✓ Audit fix completed"
+
+## ci-fix-all: One-shot fixer for common CI failures
+ci-fix-all: fix-eslint-env sync-frontend-lock frontend-ci-check audit-fix
+	@echo "🎉 All CI fixes applied!"
+	@echo "💡 Review changes with: git status"
+	@echo "💡 Commit with: git commit -m 'chore: fix CI issues'"
