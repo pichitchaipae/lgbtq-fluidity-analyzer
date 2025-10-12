@@ -89,50 +89,87 @@ jobs:
 
       - name: Deploy Backend Container App
         run: |
-          az containerapp create \
+          BACKEND_EXISTS=$(az containerapp show \
             --name lgbtq-backend \
             --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
-            --environment lgbtq-env \
-            --image ${{ env.CONTAINER_REGISTRY }}/${{ github.repository_owner }}/${{ env.BACKEND_IMAGE }}:latest \
-            --target-port 8000 \
-            --ingress external \
-            --registry-server ${{ env.CONTAINER_REGISTRY }} \
-            --registry-username ${{ github.actor }} \
-            --registry-password ${{ secrets.GITHUB_TOKEN }} \
-            --env-vars \
-              AI_PROVIDER=gemini \
-              GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }} \
-              OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} \
-            --cpu 0.5 \
-            --memory 1.0Gi \
-            --min-replicas 1 \
-            --max-replicas 3
+            --query name \
+            -o tsv 2>/dev/null || echo "")
+          
+          if [ -z "$BACKEND_EXISTS" ]; then
+            # Backend doesn't exist, create it
+            az containerapp create \
+              --name lgbtq-backend \
+              --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+              --environment lgbtq-env \
+              --image ${{ env.CONTAINER_REGISTRY }}/${{ github.repository_owner }}/${{ env.BACKEND_IMAGE }}:latest \
+              --target-port 8000 \
+              --ingress external \
+              --registry-server ${{ env.CONTAINER_REGISTRY }} \
+              --registry-username ${{ github.actor }} \
+              --registry-password ${{ secrets.GITHUB_TOKEN }} \
+              --env-vars \
+                AI_PROVIDER=gemini \
+                GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }} \
+                OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} \
+              --cpu 0.5 \
+              --memory 1.0Gi \
+              --min-replicas 1 \
+              --max-replicas 3
+          else
+            # Backend exists, update it
+            az containerapp update \
+              --name lgbtq-backend \
+              --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+              --image ${{ env.CONTAINER_REGISTRY }}/${{ github.repository_owner }}/${{ env.BACKEND_IMAGE }}:latest \
+              --set-env-vars \
+                AI_PROVIDER=gemini \
+                GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }} \
+                OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
+          fi
 
       - name: Deploy Frontend Container App
         run: |
           BACKEND_URL=$(az containerapp show \
+            --name lgbtq-frontend \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --query properties.configuration.ingress.fqdn \
+            -o tsv 2>/dev/null || echo "")
+          
+          BACKEND_FQDN=$(az containerapp show \
             --name lgbtq-backend \
             --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
             --query properties.configuration.ingress.fqdn \
             -o tsv)
           
-          az containerapp create \
-            --name lgbtq-frontend \
-            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
-            --environment lgbtq-env \
-            --image ${{ env.CONTAINER_REGISTRY }}/${{ github.repository_owner }}/${{ env.FRONTEND_IMAGE }}:latest \
-            --target-port 80 \
-            --ingress external \
-            --registry-server ${{ env.CONTAINER_REGISTRY }} \
-            --registry-username ${{ github.actor }} \
-            --registry-password ${{ secrets.GITHUB_TOKEN }} \
-            --env-vars \
-              BACKEND_URL=https://${BACKEND_URL} \
-              REACT_APP_API_URL=https://${BACKEND_URL} \
-            --cpu 0.25 \
-            --memory 0.5Gi \
-            --min-replicas 1 \
-            --max-replicas 2
+          if [ -z "$BACKEND_URL" ]; then
+            # Frontend doesn't exist, create it
+            az containerapp create \
+              --name lgbtq-frontend \
+              --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+              --environment lgbtq-env \
+              --image ${{ env.CONTAINER_REGISTRY }}/${{ github.repository_owner }}/${{ env.FRONTEND_IMAGE }}:latest \
+              --target-port 80 \
+              --ingress external \
+              --registry-server ${{ env.CONTAINER_REGISTRY }} \
+              --registry-username ${{ github.actor }} \
+              --registry-password ${{ secrets.GITHUB_TOKEN }} \
+              --env-vars \
+                BACKEND_URL=https://${BACKEND_FQDN} \
+                REACT_APP_API_URL=https://${BACKEND_FQDN} \
+              --cpu 0.25 \
+              --memory 0.5Gi \
+              --min-replicas 1 \
+              --max-replicas 2
+          else
+            # Frontend exists, update it
+            az containerapp update \
+              --name lgbtq-frontend \
+              --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+              --image ${{ env.CONTAINER_REGISTRY }}/${{ github.repository_owner }}/${{ env.FRONTEND_IMAGE }}:latest \
+              --set-env-vars \
+                BACKEND_URL=https://${BACKEND_FQDN} \
+                REACT_APP_API_URL=https://${BACKEND_FQDN}
+          fi
 
       - name: Get Application URLs
         run: |
