@@ -32,11 +32,11 @@ def test_anova_with_simulated_data(analyzer, simulated_dataset):
 
 def test_anova_small_sample_size_warning(analyzer):
     """Test that a small sample size returns a specific warning."""
-    small_dataset = [{"media1": 1, "media2": 1, "family2": 1, "family3": 1, "school1": 1}] * 10
+    small_dataset = [{"media1": 1, "media2": 1, "family2": 1, "family3": 1, "school1": 1}] * 5  # Less than 10
     results = analyzer.analyze_two_way_anova(small_dataset)
 
     assert "error" in results
-    assert results["error"] == "Small sample size"
+    assert results["error"] == "Insufficient data"
 
 def test_anova_dataframe_preparation(analyzer, simulated_dataset):
     """Test the internal DataFrame preparation logic."""

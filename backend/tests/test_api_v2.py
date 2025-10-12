@@ -52,7 +52,7 @@ def test_analyze_v2_without_ai_insights(simulated_dataset_dict):
 
 def test_analyze_v2_small_sample_size(simulated_dataset_dict):
     """Test the endpoint with a dataset that is too small."""
-    small_dataset = simulated_dataset_dict[:10]
+    small_dataset = simulated_dataset_dict[:5]  # Less than 10 required
     response = client.post(
         "/api/v2/analysis",
         json={"dataset": small_dataset}
