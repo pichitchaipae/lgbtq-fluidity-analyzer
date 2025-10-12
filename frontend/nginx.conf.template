@@ -4,6 +4,8 @@ server {
     
     root /usr/share/nginx/html;
     index index.html;
+    
+    # Updated: Oct 13, 2025 - Force rebuild with correct nginx proxy config
 
     # Enable gzip compression
     gzip on;
