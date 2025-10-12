@@ -1,4 +1,7 @@
-"""FastAPI application entrypoint."""
+"""FastAPI application entrypoint.
+
+Deployment: October 13, 2025 - Azure Container Apps
+"""
 from __future__ import annotations
 
 from fastapi import FastAPI
