@@ -17,8 +17,8 @@ server {
     add_header Referrer-Policy "strict-origin-when-cross-origin" always;
 
     # API proxy to backend - uses BACKEND_URL environment variable
-    location /api {
-        proxy_pass ${BACKEND_URL};
+    location /api/ {
+        proxy_pass ${BACKEND_URL}/api/;
         proxy_http_version 1.1;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
