@@ -133,11 +133,11 @@ We release security updates:
 ## 📞 Contact
 
 For security concerns:
-- Email: **[INSERT YOUR EMAIL]**
-- PGP Key: **[INSERT PGP KEY ID if available]**
+- Email: **[jao.pichitchai@gmail.com](mailto:jao.pichitchai@gmail.com)**
+- PGP Key: **[Contact via email for PGP key if needed]**
 
 For general questions:
-- Open a [Discussion](https://github.com/YOUR_USERNAME/lgbtq-fluidity-analyzer/discussions)
+- Open a [Discussion](https://github.com/pichitchaipae/lgbtq-fluidity-analyzer/discussions)
 
 ---
 
