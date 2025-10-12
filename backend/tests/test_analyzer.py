@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import pytest
 
-from backend.app.services.analyzer import LGBTQAnalyzer
+from app.services.analyzer import LGBTQAnalyzer
 
 
 @pytest.fixture()

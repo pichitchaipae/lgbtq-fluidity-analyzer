@@ -6,8 +6,21 @@ metadata:
 data:
   ENVIRONMENT: "production"
   LOG_LEVEL: "info"
+  # AI Provider Configuration
+  AI_PROVIDER: "gemini" # Options: 'gemini' or 'openai'
   # No database - in-memory processing only for privacy
   DATA_RETENTION: "none"
+---
+# AI API Keys - Should use Kubernetes Secrets in production
+apiVersion: v1
+kind: Secret
+metadata:
+  name: ai-api-keys
+  namespace: lgbtq-analysis
+type: Opaque
+stringData:
+  GEMINI_API_KEY: "" # Set this to your Gemini API key
+  OPENAI_API_KEY: "" # Optional - for fallback
 ---
 apiVersion: v1
 kind: ConfigMap

@@ -93,7 +93,7 @@ That's it! 🎉
   - [🚀 Quick Start](#-quick-start)
     - [Prerequisites](#prerequisites)
     - [Option 1: Docker (Recommended)](#option-1-docker-recommended)
-  - [📚 Quick Links](#-quick-links)
+  - [📚 Documentation](#-documentation)
   - [Contents](#contents)
   - [Architecture](#architecture)
     - [Backend Service](#backend-service)
@@ -111,7 +111,17 @@ That's it! 🎉
   - [Testing](#testing)
   - [Deployment](#deployment)
   - [Customization](#customization)
+  - [🆕 What's New in v2.0](#-whats-new-in-v20)
+    - [Advanced Two-Way ANOVA Analysis](#advanced-two-way-anova-analysis)
+    - [AI-Powered Insights (Optional)](#ai-powered-insights-optional)
+    - [Dual Analysis Modes](#dual-analysis-modes)
   - [Ethics \& Privacy](#ethics--privacy)
+  - [API Documentation](#api-documentation)
+    - [POST /api/v2/analysis](#post-apiv2analysis)
+  - [📧 Contact \& Support](#-contact--support)
+    - [Get Help](#get-help)
+    - [Maintainer](#maintainer)
+    - [Security Issues](#security-issues)
 
 ## Architecture
 
@@ -288,12 +298,94 @@ Set `VITE_API_BASE_URL` in `.env` (default assumes `http://localhost:8000/api/v1
 - Add new questions by modifying `questionGroups` in `frontend/src/App.tsx` and backend schema definitions.
 - Tailwind theme colors are in `frontend/tailwind.config.js`.
 
+## 🆕 What's New in v2.0
+
+### Advanced Two-Way ANOVA Analysis
+- Analyze interaction effects between Media and Social factors
+- Understand how factors combine to influence identity exploration
+
+### AI-Powered Insights (Optional)
+- Get plain-language explanations of statistical results
+- Bilingual support (Thai/English)
+- Privacy-preserved: only aggregated statistics are shared
+
+### Dual Analysis Modes
+- 🔒 **Local Mode**: 100% private, browser-only calculation
+- 🤖 **AI Mode**: Enhanced insights with anonymous statistics
+
 ## Ethics & Privacy
+
+**v2.0 maintains our zero-data-collection policy:**
+- Local mode: No data leaves your device
+- AI mode: Only statistical summaries (F-values, p-values) sent
+- No individual responses stored or transmitted
+- No user identification possible
 
 - No personally identifiable information is collected or persisted.
 - All computations rely on in-memory data supplied per request.
 - Output is suited for educational and research purposes only; it is **not** a clinical diagnosis.
 
-> “การยอมรับความแตกต่างคือจุดเริ่มต้นของสังคมที่เท่าเทียม”
+## API Documentation
+
+### POST /api/v2/analysis
+
+**Request:**
+```
+{
+  "dataset": [
+    {
+      "media1": 3,
+      "media2": 2,
+      // ... other questions
+    }
+  ],
+  "options": {
+    "ai_insights": true,
+    "language": "th"
+  }
+}
+```
+
+**Response:**
+```
+{
+  "anova_results": {
+    "media_effect": {...},
+    "social_effect": {...},
+    "interaction_effect": {...}
+  },
+  "visualizations": {
+    "interaction_plot": "base64...",
+    "group_means": [...]
+  },
+  "ai_interpretation": {
+    "th": "คำอธิบายภาษาไทย...",
+    "en": "English explanation..."
+  }
+}
+```
+
+---
+
+## 📧 Contact & Support
+
+### Get Help
+
+- 💬 **Discussions**: [GitHub Discussions](https://github.com/pichitchaipae/lgbtq-fluidity-analyzer/discussions) - Ask questions, share ideas
+- 🐛 **Issues**: [Report bugs or request features](https://github.com/pichitchaipae/lgbtq-fluidity-analyzer/issues)
+- 📖 **Documentation**: [Full documentation](docs/README.md)
+
+### Maintainer
+
+- **Email**: [jao.pichitchai@gmail.com](mailto:jao.pichitchai@gmail.com)
+- **GitHub**: [@pichitchaipae](https://github.com/pichitchaipae)
+
+### Security Issues
+
+For security vulnerabilities, please email [jao.pichitchai@gmail.com](mailto:jao.pichitchai@gmail.com) directly or see our [Security Policy](SECURITY.md).
+
+---
+
+> "การยอมรับความแตกต่างคือจุดเริ่มต้นของสังคมที่เท่าเทียม"
 
 <!-- Configuration complete - 2025-10-12 02:30:45 -->

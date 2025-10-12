@@ -22,6 +22,29 @@ Everything you need to deploy the application:
 - **[Kubernetes Status](deployment/K8S-DEPLOYMENT-STATUS.md)** - Current K8s deployment state
 - **[Next Steps](deployment/NEXT-STEPS.md)** - Post-deployment actions
 
+### 🎯 Features & Usage
+
+User guides and technical documentation for application features:
+
+- **[Chatbot Usage Guide](features/CHATBOT-USAGE.md)** - How to use the AI chatbot feature
+- **[Chatbot Complete Documentation](features/CHATBOT-COMPLETE.md)** - Technical implementation details
+- **[Chatbot Status](features/CHATBOT-STATUS.md)** - Current feature status and capabilities
+
+### 🔧 Troubleshooting & Fixes
+
+Solutions to common problems and bug fixes:
+
+- **[Chatbot Fix Summary](troubleshooting/CHATBOT-FIX-SUMMARY.md)** - Thai language MAX_TOKENS error resolution
+- **[Layout Improvement](troubleshooting/LAYOUT-IMPROVEMENT.md)** - UI layout width and spacing fixes
+- **[AI Insights Fix](troubleshooting/AI-INSIGHTS-FIX.md)** - Advanced Analysis error handling improvements
+
+### 🚀 Future Enhancements
+
+Planned features and enhancement roadmap:
+
+- **[Data Persistence](future-plans/DATA-PERSISTENCE.md)** - localStorage and database implementation options
+- **[Alternative AI Providers](future-plans/UNLIMITED-FREE-CHATBOT.md)** - Claude API and Ollama integration
+
 ### 🐙 GitHub Setup
 
 Instructions for uploading to GitHub:
@@ -111,6 +134,17 @@ docs/
 │   ├── QUICK-START.md          # Fast start guide
 │   ├── K8S-DEPLOYMENT-STATUS.md
 │   └── NEXT-STEPS.md
+├── features/                    # Feature documentation (NEW)
+│   ├── CHATBOT-COMPLETE.md     # Technical implementation
+│   ├── CHATBOT-USAGE.md        # User guide
+│   └── CHATBOT-STATUS.md       # Feature status
+├── troubleshooting/            # Problem-solving guides (NEW)
+│   ├── CHATBOT-FIX-SUMMARY.md  # Thai language fix
+│   ├── LAYOUT-IMPROVEMENT.md   # UI improvements
+│   └── AI-INSIGHTS-FIX.md      # Analysis error fixes
+├── future-plans/               # Enhancement roadmap (NEW)
+│   ├── DATA-PERSISTENCE.md     # Database implementation
+│   └── UNLIMITED-FREE-CHATBOT.md # Alternative AI providers
 ├── github/                      # GitHub upload guides
 │   ├── UPLOAD-INSTRUCTIONS.txt # ⭐ Start here!
 │   ├── GITHUB-READY.md         # Complete checklist

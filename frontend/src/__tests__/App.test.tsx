@@ -15,6 +15,7 @@ const renderApp = () =>
 describe("App", () => {
   it("renders form heading", () => {
     renderApp();
-    expect(screen.getByText(/lgbtq\+/i)).toBeInTheDocument();
+    // Use getByRole to find the main heading instead of multiple LGBTQ+ texts
+    expect(screen.getByRole("heading", { name: /เครื่องมือวิเคราะห์ความหลากหลายทางเพศ LGBTQ\+/i })).toBeInTheDocument();
   });
 });

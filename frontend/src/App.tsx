@@ -1,10 +1,34 @@
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
+import { Bar, Line } from 'react-chartjs-2';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  LineElement,
+  PointElement,
+  Title,
+  Tooltip,
+  Legend,
+} from 'chart.js';
 
-import { analyzeSurvey } from "./api";
-import type { AnalysisResponse, SurveyAnswers } from "./types";
+import { analyzeSurvey, analyzeDatasetV2 } from "./api";
+import type { AnalysisResponse, SurveyAnswers, AnalysisV2Response, AnalysisRequest } from "./types";
+import { ChatBot } from "./components/ChatBot";
 
 type Language = "th" | "en";
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  LineElement,
+  PointElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 const initialAnswers: SurveyAnswers = {
   media1: 0,
@@ -16,6 +40,8 @@ const initialAnswers: SurveyAnswers = {
   community2: 0,
   culture1: 0,
   culture2: 0,
+  self1: 0,
+  self2: 0,
   exploration1: 0,
   exploration2: 0,
   school1: 0,
@@ -49,6 +75,21 @@ const translations = {
     refsTitle: "📚 เอกสารอ้างอิง",
     disclaimer: "ผลลัพธ์นี้เป็นแนวโน้มเชิงสถิติจากการตอบแบบสอบถาม ไม่ใช่การวินิจฉัยทางการแพทย์หรือการระบุตัวตนที่แท้จริง ไม่มีการจัดเก็บข้อมูลส่วนบุคคลใด ๆ และใช้เพื่อการศึกษาเท่านั้น",
     note: "เครื่องมือนี้ออกแบบมาเพื่อการวิจัยและการศึกษา เพื่อช่วยให้เข้าใจมิติของความหลากหลายทางเพศ",
+    advancedAnalysisTitle: "🔬 การวิเคราะห์ขั้นสูง",
+    advancedAnalysisDesc: (count) => `คุณมี ${count} รายการพร้อมสำหรับการวิเคราะห์เชิงลึก`,
+    aiAnalysisBtn: "🤖 รับข้อมูลเชิงลึกจาก AI",
+    aiAnalysisDesc: "ส่งข้อมูลสถิติที่ไม่ระบุตัวตนเพื่อการตีความอย่างละเอียด",
+    localAnalysisBtn: "🔒 คำนวณในเครื่อง",
+    localAnalysisDesc: "ส่วนตัว 100% คำนวณในเบราว์เซอร์ ไม่ใช้ AI",
+    cancelBtn: "ยกเลิก",
+    advancedResultsTitle: "🔬 การวิเคราะห์ Two-Way ANOVA",
+    aiSummaryTitle: "สรุปโดย AI",
+    chartsTitle: "กราฟ",
+    statsTitle: "รายละเอียดทางสถิติ",
+    interactionPlotTitle: "กราฟปฏิสัมพันธ์",
+    socialGroupLabel: "กลุ่มสังคม",
+    loadingAdvanced: "⏳ กำลังโหลด...",
+    advancedAnalysisBtn: "🔬 เรียกใช้การวิเคราะห์ขั้นสูง",
   },
   en: {
     title: "LGBTQ+ Sexual Fluidity Analysis Tool",
@@ -73,6 +114,21 @@ const translations = {
     refsTitle: "📚 References",
     disclaimer: "These results are statistical trends from survey responses, not a medical diagnosis or identification of true identity. No personal data is collected, and this is for educational purposes only.",
     note: "This tool is designed for research and educational purposes to help understand dimensions of sexual diversity.",
+    advancedAnalysisTitle: "🔬 Advanced Analysis",
+    advancedAnalysisDesc: (count) => `You have ${count} records available for a deeper analysis.`,
+    aiAnalysisBtn: "🤖 Get AI Insights",
+    aiAnalysisDesc: "Sends anonymous statistics for a detailed interpretation.",
+    localAnalysisBtn: "🔒 Calculate Locally",
+    localAnalysisDesc: "100% private, in-browser calculation. No AI.",
+    cancelBtn: "Cancel",
+    advancedResultsTitle: "🔬 Two-Way ANOVA Analysis",
+    aiSummaryTitle: "AI Summary",
+    chartsTitle: "Visualizations",
+    statsTitle: "Statistical Details",
+    interactionPlotTitle: "Interaction Plot",
+    socialGroupLabel: "Social Group",
+    loadingAdvanced: "⏳ Loading...",
+    advancedAnalysisBtn: "🔬 Run Advanced Analysis",
   },
 };
 
@@ -508,9 +564,9 @@ const SectionCard = ({
   description: string;
   children: React.ReactNode;
 }) => (
-  <section className="rounded-3xl border border-pride-200 bg-white/75 p-6 shadow-lg backdrop-blur">
-    <header className="mb-4">
-      <h2 className="text-xl font-semibold text-pride-800">{title}</h2>
+  <section className="rounded-3xl border border-pride-200 bg-white/75 p-8 shadow-lg backdrop-blur">
+    <header className="mb-6">
+      <h2 className="text-2xl font-semibold text-pride-800">{title}</h2>
       <p className="text-sm text-pride-600">{description}</p>
     </header>
     {children}
@@ -600,17 +656,198 @@ const ResultCard = ({ result, language }: { result: AnalysisResponse; language: 
 );
 };
 
+// V2 Components
+const AdvancedAnalysisDialog = ({ onAnalyze, onCancel, analysisHistoryCount, language }) => {
+  const t = translations[language];
+  const hasEnoughData = analysisHistoryCount >= 10;
+  
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+      <div className="bg-white rounded-3xl p-8 shadow-2xl max-w-md w-full">
+        <h2 className="text-2xl font-bold text-pride-800 mb-4">{t.advancedAnalysisTitle || "🔬 Advanced Analysis"}</h2>
+        
+        {hasEnoughData ? (
+          <p className="text-gray-600 mb-6">
+            {t.advancedAnalysisDesc || `You have ${analysisHistoryCount} records available for a deeper analysis.`}
+          </p>
+        ) : (
+          <div className="mb-6 p-4 rounded-2xl bg-amber-50 border border-amber-200">
+            <p className="text-sm text-amber-800 font-semibold mb-2">
+              ⚠️ {language === 'th' ? 'ข้อมูลไม่เพียงพอ' : 'Insufficient Data'}
+            </p>
+            <p className="text-sm text-amber-700">
+              {language === 'th' 
+                ? `คุณมีข้อมูล ${analysisHistoryCount} ชุด - ต้องการอย่างน้อย 10 ชุดสำหรับการวิเคราะห์ทางสถิติ`
+                : `You have ${analysisHistoryCount} submission(s). At least 10 submissions are required.`}
+            </p>
+            <p className="text-xs text-amber-600 mt-2">
+              💡 {language === 'th' 
+                ? 'ทำแบบสอบถามเพิ่มอีก ' + (10 - analysisHistoryCount) + ' ครั้ง หรือใช้ Chatbot ด้านล่างแทน!'
+                : `Complete ${10 - analysisHistoryCount} more survey(s) or use the Chatbot below!`}
+            </p>
+          </div>
+        )}
+
+        <div className="space-y-4">
+          <button
+            onClick={() => onAnalyze(true)}
+            disabled={!hasEnoughData}
+            className={`w-full text-left rounded-2xl p-4 shadow-lg transition-transform ${
+              hasEnoughData 
+                ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:scale-105' 
+                : 'bg-gray-200 text-gray-400 cursor-not-allowed opacity-60'
+            }`}
+          >
+            <h3 className="font-bold">{t.aiAnalysisBtn || "🤖 Get AI Insights"}</h3>
+            <p className="text-sm opacity-90">{t.aiAnalysisDesc || "Sends anonymous statistics for a detailed interpretation."}</p>
+            {!hasEnoughData && (
+              <p className="text-xs mt-1">🔒 {language === 'th' ? 'ต้องมี 10 ชุดข้อมูล' : 'Requires 10 submissions'}</p>
+            )}
+          </button>
+
+          <button
+            onClick={() => onAnalyze(false)}
+            disabled={!hasEnoughData}
+            className={`w-full text-left rounded-2xl p-4 transition ${
+              hasEnoughData
+                ? 'bg-gray-100 hover:bg-gray-200'
+                : 'bg-gray-100 text-gray-400 cursor-not-allowed opacity-60'
+            }`}
+          >
+            <h3 className={`font-bold ${hasEnoughData ? 'text-gray-800' : 'text-gray-400'}`}>
+              {t.localAnalysisBtn || "🔒 Calculate Locally"}
+            </h3>
+            <p className={`text-sm ${hasEnoughData ? 'text-gray-600' : 'text-gray-400'}`}>
+              {t.localAnalysisDesc || "100% private, in-browser calculation. No AI."}
+            </p>
+            {!hasEnoughData && (
+              <p className="text-xs mt-1">🔒 {language === 'th' ? 'ต้องมี 10 ชุดข้อมูล' : 'Requires 10 submissions'}</p>
+            )}
+          </button>
+        </div>
+
+        <button
+          onClick={onCancel}
+          className="w-full mt-6 text-center text-sm font-bold text-gray-500 hover:text-gray-800"
+        >
+          {t.cancelBtn || "Cancel"}
+        </button>
+      </div>
+    </div>
+  );
+};
+
+const InteractionPlot = ({ data, language }) => {
+  const t = translations[language];
+  const chartData = {
+    labels: Object.keys(data),
+    datasets: Object.keys(data[Object.keys(data)[0]]).map((socialGroup, index) => ({
+      label: `${t.socialGroupLabel || 'Social'}: ${socialGroup}`,
+      data: Object.keys(data).map(mediaGroup => data[mediaGroup][socialGroup]),
+      borderColor: ['#8B5CF6', '#EC4899', '#F43F5E'][index],
+      backgroundColor: ['#A78BFA', '#F9A8D4', '#F87171'][index],
+      tension: 0.1,
+    })),
+  };
+  return <Line data={chartData} options={{ responsive: true, plugins: { legend: { position: 'top' }, title: { display: true, text: t.interactionPlotTitle || 'Interaction Plot' } } }} />;
+};
+
+const AnovaTable = ({ data, language }) => {
+  const t = translations[language];
+  const headers = ['Source', 'Sum of Squares', 'df', 'F', 'p-value', 'η²'];
+  return (
+    <div className="overflow-x-auto">
+      <table className="min-w-full bg-white rounded-lg shadow">
+        <thead>
+          <tr className="bg-gray-100">
+            {headers.map(h => <th key={h} className="py-2 px-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">{h}</th>)}
+          </tr>
+        </thead>
+        <tbody>
+          {Object.entries(data).map(([key, value]) => (
+            <tr key={key} className="border-b">
+              <td className="py-2 px-4 text-sm text-gray-700">{key}</td>
+              <td className="py-2 px-4 text-sm text-gray-700">{value.sum_of_squares.toFixed(2)}</td>
+              <td className="py-2 px-4 text-sm text-gray-700">{value.df}</td>
+              <td className="py-2 px-4 text-sm text-gray-700">{value.F.toFixed(2)}</td>
+              <td className="py-2 px-4 text-sm text-gray-700">{value.p_value < 0.001 ? "< 0.001" : value.p_value.toFixed(3)}</td>
+              <td className="py-2 px-4 text-sm text-gray-700">{value.eta_sq ? value.eta_sq.toFixed(3) : 'N/A'}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};
+
+const AdvancedResultsCard = ({ result, language }) => {
+  const [showCharts, setShowCharts] = useState(true);
+  const [showTable, setShowTable] = useState(false);
+  const t = translations[language];
+
+  return (
+    <SectionCard title={t.advancedResultsTitle || "🔬 Two-Way ANOVA Analysis"} description="">
+      <div className="space-y-4">
+        {result.ai_interpretation && (
+          <div className="p-4 rounded-2xl bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200">
+            <h3 className="font-bold text-blue-800 mb-2">{t.aiSummaryTitle || "AI Summary"}</h3>
+            <p className="text-sm text-gray-700 whitespace-pre-wrap">{result.ai_interpretation}</p>
+          </div>
+        )}
+
+        <div className="p-4 rounded-2xl bg-gray-50">
+          <button onClick={() => setShowCharts(!showCharts)} className="font-bold text-lg w-full text-left">
+            {showCharts ? '▼' : '►'} {t.chartsTitle || "Visualizations"}
+          </button>
+          {showCharts && (
+            <div className="mt-4">
+              <InteractionPlot data={result.visualizations.interaction_plot} language={language} />
+            </div>
+          )}
+        </div>
+
+        <div className="p-4 rounded-2xl bg-gray-50">
+          <button onClick={() => setShowTable(!showTable)} className="font-bold text-lg w-full text-left">
+            {showTable ? '▼' : '►'} {t.statsTitle || "Statistical Details"}
+          </button>
+          {showTable && (
+            <div className="mt-4">
+              <AnovaTable data={result.anova_results} language={language} />
+            </div>
+          )}
+        </div>
+
+        <p className="text-xs text-center text-gray-500 p-2">{result.privacy_notice}</p>
+      </div>
+    </SectionCard>
+  );
+};
+
+
 function App() {
   const [answers, setAnswers] = useState<SurveyAnswers>(initialAnswers);
   const [result, setResult] = useState<AnalysisResponse | null>(null);
   const [language, setLanguage] = useState<Language>("th");
+
+  // State for v2 Analysis
+  const [showAdvancedAnalysis, setShowAdvancedAnalysis] = useState(false);
+  const [v2Result, setV2Result] = useState<AnalysisV2Response | null>(null);
+  const [analysisHistory, setAnalysisHistory] = useState<AnalysisRequest[]>([]);
 
   const t = translations[language];
   const questionGroups = questionGroupsData[language];
 
   const mutation = useMutation({
     mutationFn: analyzeSurvey,
-    onSuccess: (data) => setResult(data),
+    onSuccess: (data) => {
+      setResult(data);
+      setAnalysisHistory(prev => [...prev, answers]);
+    },
+  });
+
+  const v2Mutation = useMutation({
+    mutationFn: analyzeDatasetV2,
+    onSuccess: (data) => setV2Result(data),
   });
 
   const handleChange = (key: keyof SurveyAnswers, value: string) => {
@@ -625,11 +862,44 @@ function App() {
   const handleReset = () => {
     setAnswers(initialAnswers);
     setResult(null);
+    setV2Result(null);
+    setShowAdvancedAnalysis(false);
     mutation.reset();
+    v2Mutation.reset();
+  };
+
+  const handleAdvancedAnalysis = (useAI: boolean) => {
+    setShowAdvancedAnalysis(false);
+    if (analysisHistory.length < 2) return;
+
+    if (useAI) {
+      v2Mutation.mutate({
+        dataset: analysisHistory,
+        ai_insights: true,
+        language: language,
+      });
+    } else {
+      // Local calculation
+      try {
+        const localResult = calculateLocalTwoWayAnova(analysisHistory);
+        setV2Result(localResult);
+      } catch (error) {
+        console.error("Local ANOVA calculation failed:", error);
+        v2Mutation.mutate(null); // Trigger error state
+      }
+    }
   };
 
   return (
-    <div className="mx-auto flex min-h-screen max-w-5xl flex-col gap-6 p-6">
+    <div className="mx-auto flex min-h-screen max-w-7xl flex-col gap-6 p-6">
+      {showAdvancedAnalysis && (
+        <AdvancedAnalysisDialog
+          onCancel={() => setShowAdvancedAnalysis(false)}
+          onAnalyze={handleAdvancedAnalysis}
+          analysisHistoryCount={analysisHistory.length}
+          language={language}
+        />
+      )}
       <header className="rounded-3xl bg-gradient-to-br from-purple-500 via-pink-500 to-rose-500 p-10 text-white shadow-2xl">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -714,6 +984,43 @@ function App() {
         {result && (
           <div className="space-y-6 lg:sticky lg:top-6 lg:max-h-[calc(100vh-8rem)] lg:overflow-y-auto">
             <ResultCard result={result} language={language} />
+
+            {analysisHistory.length > 0 && !v2Result && (
+              <button
+                onClick={() => setShowAdvancedAnalysis(true)}
+                disabled={v2Mutation.isPending}
+                className="w-full rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 px-8 py-3 text-sm font-bold text-white shadow-xl transition-all hover:shadow-2xl hover:scale-105 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {v2Mutation.isPending ? (t.loadingAdvanced || "⏳ Loading...") : (t.advancedAnalysisBtn || "🔬 Run Advanced Analysis")}
+              </button>
+            )}
+
+            {v2Mutation.isError && (
+              <div className="rounded-2xl border border-red-200 bg-red-50 p-4">
+                <p className="text-sm font-bold text-red-800 mb-2">
+                  ❌ {language === 'th' ? 'ไม่สามารถวิเคราะห์ข้อมูลขั้นสูงได้' : 'Advanced Analysis Not Available'}
+                </p>
+                <p className="text-sm text-red-700">
+                  {v2Mutation.error instanceof Error && v2Mutation.error.message.includes('10 submissions')
+                    ? v2Mutation.error.message
+                    : language === 'th'
+                    ? `คุณมีข้อมูล ${analysisHistory.length} ชุด - ต้องการอย่างน้อย 10 ชุดสำหรับการวิเคราะห์ทางสถิติ`
+                    : `You have ${analysisHistory.length} submission(s). At least 10 submissions are required for statistical analysis.`}
+                </p>
+                <p className="text-xs text-red-600 mt-2">
+                  💡 {language === 'th' 
+                    ? 'แนะนำ: ลองใช้ Chatbot ด้านล่างแทน - ทำงานได้ตั้งแต่ 1 submission!' 
+                    : 'Tip: Try the Chatbot below instead - works with just 1 submission!'}
+                </p>
+              </div>
+            )}
+
+            {v2Result && (
+              <AdvancedResultsCard result={v2Result} language={language} />
+            )}
+
+            {/* Add ChatBot after results */}
+            <ChatBot surveyResult={answers} language={language} />
           </div>
         )}
       </main>
