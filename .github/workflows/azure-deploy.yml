@@ -127,6 +127,7 @@ jobs:
             --registry-username ${{ github.actor }} \
             --registry-password ${{ secrets.GITHUB_TOKEN }} \
             --env-vars \
+              BACKEND_URL=https://${BACKEND_URL} \
               REACT_APP_API_URL=https://${BACKEND_URL} \
             --cpu 0.25 \
             --memory 0.5Gi \

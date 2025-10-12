@@ -20,8 +20,11 @@ RUN npm run build
 # Production stage
 FROM nginx:alpine AS production
 
-# Copy custom nginx config
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Set default backend URL (will be overridden by environment variable)
+ENV BACKEND_URL=http://backend:8000
+
+# Copy nginx config template
+COPY nginx.conf.template /etc/nginx/templates/default.conf.template
 
 # Copy built assets from builder
 COPY --from=builder /app/dist /usr/share/nginx/html
@@ -35,4 +38,5 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
 
 EXPOSE 80
 
+# nginx will automatically substitute environment variables in templates
 CMD ["nginx", "-g", "daemon off;"]
