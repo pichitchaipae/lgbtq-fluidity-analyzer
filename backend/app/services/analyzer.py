@@ -222,11 +222,13 @@ class LGBTQAnalyzer:
         """
         Performs a Two-Way ANOVA analysis on a dataset of survey responses.
         """
-        if len(dataset) < 30:
+        if len(dataset) < 10:
             return {
-                "error": "Small sample size",
-                "message": "A sample size of at least 30 is recommended for reliable ANOVA results.",
-                "recommendation": "Collect more data for robust analysis."
+                "error": "Insufficient data",
+                "message": f"You have {len(dataset)} survey submission(s). At least 10 submissions are required for statistical analysis.",
+                "recommendation": "Complete the survey multiple times or wait for more responses to enable advanced analysis.",
+                "current_count": len(dataset),
+                "required_count": 10
             }
 
         df = self._prepare_anova_dataframe(dataset)

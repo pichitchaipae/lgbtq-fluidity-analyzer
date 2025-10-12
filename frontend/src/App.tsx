@@ -659,27 +659,70 @@ const ResultCard = ({ result, language }: { result: AnalysisResponse; language: 
 // V2 Components
 const AdvancedAnalysisDialog = ({ onAnalyze, onCancel, analysisHistoryCount, language }) => {
   const t = translations[language];
+  const hasEnoughData = analysisHistoryCount >= 10;
+  
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
       <div className="bg-white rounded-3xl p-8 shadow-2xl max-w-md w-full">
         <h2 className="text-2xl font-bold text-pride-800 mb-4">{t.advancedAnalysisTitle || "🔬 Advanced Analysis"}</h2>
-        <p className="text-gray-600 mb-6">{t.advancedAnalysisDesc || `You have ${analysisHistoryCount} records available for a deeper analysis.`}</p>
+        
+        {hasEnoughData ? (
+          <p className="text-gray-600 mb-6">
+            {t.advancedAnalysisDesc || `You have ${analysisHistoryCount} records available for a deeper analysis.`}
+          </p>
+        ) : (
+          <div className="mb-6 p-4 rounded-2xl bg-amber-50 border border-amber-200">
+            <p className="text-sm text-amber-800 font-semibold mb-2">
+              ⚠️ {language === 'th' ? 'ข้อมูลไม่เพียงพอ' : 'Insufficient Data'}
+            </p>
+            <p className="text-sm text-amber-700">
+              {language === 'th' 
+                ? `คุณมีข้อมูล ${analysisHistoryCount} ชุด - ต้องการอย่างน้อย 10 ชุดสำหรับการวิเคราะห์ทางสถิติ`
+                : `You have ${analysisHistoryCount} submission(s). At least 10 submissions are required.`}
+            </p>
+            <p className="text-xs text-amber-600 mt-2">
+              💡 {language === 'th' 
+                ? 'ทำแบบสอบถามเพิ่มอีก ' + (10 - analysisHistoryCount) + ' ครั้ง หรือใช้ Chatbot ด้านล่างแทน!'
+                : `Complete ${10 - analysisHistoryCount} more survey(s) or use the Chatbot below!`}
+            </p>
+          </div>
+        )}
 
         <div className="space-y-4">
           <button
             onClick={() => onAnalyze(true)}
-            className="w-full text-left rounded-2xl p-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg hover:scale-105 transition-transform"
+            disabled={!hasEnoughData}
+            className={`w-full text-left rounded-2xl p-4 shadow-lg transition-transform ${
+              hasEnoughData 
+                ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:scale-105' 
+                : 'bg-gray-200 text-gray-400 cursor-not-allowed opacity-60'
+            }`}
           >
             <h3 className="font-bold">{t.aiAnalysisBtn || "🤖 Get AI Insights"}</h3>
             <p className="text-sm opacity-90">{t.aiAnalysisDesc || "Sends anonymous statistics for a detailed interpretation."}</p>
+            {!hasEnoughData && (
+              <p className="text-xs mt-1">🔒 {language === 'th' ? 'ต้องมี 10 ชุดข้อมูล' : 'Requires 10 submissions'}</p>
+            )}
           </button>
 
           <button
             onClick={() => onAnalyze(false)}
-            className="w-full text-left rounded-2xl p-4 bg-gray-100 hover:bg-gray-200 transition"
+            disabled={!hasEnoughData}
+            className={`w-full text-left rounded-2xl p-4 transition ${
+              hasEnoughData
+                ? 'bg-gray-100 hover:bg-gray-200'
+                : 'bg-gray-100 text-gray-400 cursor-not-allowed opacity-60'
+            }`}
           >
-            <h3 className="font-bold text-gray-800">{t.localAnalysisBtn || "🔒 Calculate Locally"}</h3>
-            <p className="text-sm text-gray-600">{t.localAnalysisDesc || "100% private, in-browser calculation. No AI."}</p>
+            <h3 className={`font-bold ${hasEnoughData ? 'text-gray-800' : 'text-gray-400'}`}>
+              {t.localAnalysisBtn || "🔒 Calculate Locally"}
+            </h3>
+            <p className={`text-sm ${hasEnoughData ? 'text-gray-600' : 'text-gray-400'}`}>
+              {t.localAnalysisDesc || "100% private, in-browser calculation. No AI."}
+            </p>
+            {!hasEnoughData && (
+              <p className="text-xs mt-1">🔒 {language === 'th' ? 'ต้องมี 10 ชุดข้อมูล' : 'Requires 10 submissions'}</p>
+            )}
           </button>
         </div>
 
@@ -953,9 +996,23 @@ function App() {
             )}
 
             {v2Mutation.isError && (
-              <p className="rounded-2xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">
-                {t.errorMsg}
-              </p>
+              <div className="rounded-2xl border border-red-200 bg-red-50 p-4">
+                <p className="text-sm font-bold text-red-800 mb-2">
+                  ❌ {language === 'th' ? 'ไม่สามารถวิเคราะห์ข้อมูลขั้นสูงได้' : 'Advanced Analysis Not Available'}
+                </p>
+                <p className="text-sm text-red-700">
+                  {v2Mutation.error instanceof Error && v2Mutation.error.message.includes('10 submissions')
+                    ? v2Mutation.error.message
+                    : language === 'th'
+                    ? `คุณมีข้อมูล ${analysisHistory.length} ชุด - ต้องการอย่างน้อย 10 ชุดสำหรับการวิเคราะห์ทางสถิติ`
+                    : `You have ${analysisHistory.length} submission(s). At least 10 submissions are required for statistical analysis.`}
+                </p>
+                <p className="text-xs text-red-600 mt-2">
+                  💡 {language === 'th' 
+                    ? 'แนะนำ: ลองใช้ Chatbot ด้านล่างแทน - ทำงานได้ตั้งแต่ 1 submission!' 
+                    : 'Tip: Try the Chatbot below instead - works with just 1 submission!'}
+                </p>
+              </div>
             )}
 
             {v2Result && (
