@@ -17,7 +17,7 @@
 - CommonJS globals not recognized in ES module context
 
 **Solution Applied:**
-1. ✅ Added `/* eslint-env node */` to all `.cjs` files (via `fix-ci.ps1`)
+1. ✅ Added `/* eslint-env node */` to all `.cjs` files (via `scripts/fix-ci.ps1`)
 2. ✅ Updated `frontend/eslint.config.js` to ignore `*.config.cjs` files
 3. ✅ Updated `package.json` lint script to explicitly ignore `.cjs` files
 
@@ -44,7 +44,7 @@
 - Added `typescript-eslint: ^8.18.0` to `package.json` but didn't run `npm install`
 
 **Solution Applied:**
-1. ✅ Ran `npm install` in frontend directory (via `fix-ci.ps1`)
+1. ✅ Ran `npm install` in frontend directory (via `scripts/fix-ci.ps1`)
 2. ✅ Committed updated `package-lock.json`
 
 **Files Modified:**
@@ -158,15 +158,15 @@
 
 ## Tools Created
 
-### 1. `fix-ci.ps1` - PowerShell Automation Script
-**Location:** Project root
+### 1. `scripts/fix-ci.ps1` - PowerShell Automation Script
+**Location:** `scripts/` directory
 **Purpose:** One-command fix for common CI failures
 **Usage:**
 ```powershell
-.\fix-ci.ps1              # Run all fixes
-.\fix-ci.ps1 fix-all      # Same as above
-.\fix-ci.ps1 fix-eslint-env    # Fix only ESLint env
-.\fix-ci.ps1 sync-frontend-lock # Fix only lockfile
+.\scripts\fix-ci.ps1              # Run all fixes
+.\scripts\fix-ci.ps1 fix-all      # Same as above
+.\scripts\fix-ci.ps1 fix-eslint-env    # Fix only ESLint env
+.\scripts\fix-ci.ps1 sync-frontend-lock # Fix only lockfile
 ```
 
 **Features:**
@@ -211,9 +211,9 @@ make audit-fix               # Fix npm audit issues
    - Updated Docker Compose to V2
 
 3. **b443e6a** - chore: Add CI/CD maintenance tools
-   - Created fix-ci.ps1
+   - Created scripts/fix-ci.ps1
    - Updated Makefile
-   - Added CI-FIX-TOOLS.md
+   - Added docs/CI-FIX-TOOLS.md
 
 4. **ec8d681** - chore: fix ESLint Node env, sync frontend lockfile
    - Added `/* eslint-env node */` to .cjs files

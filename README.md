@@ -157,10 +157,13 @@ That's it! 🎉
 │   │   └── lgbtq-analysis.cy.js  # 19 automated tests
 │   ├── support/            # Custom commands
 │   └── cypress.config.js
+├── scripts/                # Automation scripts
+│   ├── deploy.ps1          # Windows deployment script
+│   ├── deploy-production.sh # Linux/Mac deployment
+│   ├── fix-ci.ps1          # CI maintenance tool
+│   └── test-docker.sh      # Docker testing
 ├── .github/workflows/ci.yml   # CI/CD pipeline
 ├── docker-compose.yml      # Local development
-├── deploy.ps1              # Interactive deployment script
-├── DEPLOYMENT.md           # Comprehensive deployment guide
 └── README.md
 ```
 
@@ -236,8 +239,11 @@ docker-compose down
 ### 🎯 Interactive Deployment
 
 ```powershell
-# Run interactive deployment script
-.\deploy.ps1
+# Run interactive deployment script (Windows)
+.\scripts\deploy.ps1
+
+# Or for Linux/Mac
+./scripts/deploy-production.sh
 
 # Choose from:
 # 1. Docker Compose (Local Development)

@@ -8,14 +8,14 @@ This directory contains tools to help fix common CI/CD pipeline failures.
 
 ```powershell
 # Run all fixes at once
-.\fix-ci.ps1
+.\scripts\fix-ci.ps1
 
 # Or run individual fixes
-.\fix-ci.ps1 fix-eslint-env
-.\fix-ci.ps1 sync-frontend-lock
-.\fix-ci.ps1 frontend-ci-check
-.\fix-ci.ps1 audit-fix
-.\fix-ci.ps1 commit
+.\scripts\fix-ci.ps1 fix-eslint-env
+.\scripts\fix-ci.ps1 sync-frontend-lock
+.\scripts\fix-ci.ps1 frontend-ci-check
+.\scripts\fix-ci.ps1 audit-fix
+.\scripts\fix-ci.ps1 commit
 ```
 
 ### Linux/macOS/Git Bash
@@ -83,7 +83,7 @@ make audit-fix
 **Fix:**
 ```powershell
 # Windows
-.\fix-ci.ps1 fix-eslint-env
+.\scripts\fix-ci.ps1 fix-eslint-env
 
 # Linux/Mac
 make fix-eslint-env
@@ -99,7 +99,7 @@ npm ERR! `npm ci` can only install packages when your package.json and package-l
 **Fix:**
 ```powershell
 # Windows
-.\fix-ci.ps1 sync-frontend-lock
+.\scripts\fix-ci.ps1 sync-frontend-lock
 
 # Linux/Mac
 make sync-frontend-lock
@@ -183,7 +183,7 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 
 **Windows without Git Bash/WSL:** Use the PowerShell script instead:
 ```powershell
-.\fix-ci.ps1
+.\scripts\fix-ci.ps1
 ```
 
 ### "node: command not found"
@@ -201,9 +201,9 @@ git commit -m "chore: fix CI issues"
 
 ## Files Overview
 
-- **`fix-ci.ps1`** - PowerShell script for Windows users
+- **`scripts/fix-ci.ps1`** - PowerShell script for Windows users
 - **`Makefile`** - Make targets for Linux/macOS/Git Bash users (at project root)
-- **`CI-FIX-TOOLS.md`** - This documentation file
+- **`docs/CI-FIX-TOOLS.md`** - This documentation file
 
 ## GitHub Actions Workflow Status
 

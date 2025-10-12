@@ -172,11 +172,11 @@ git branch -d version2.0
 5. ✅ API references
 
 ### 🛠️ Developer Tools
-1. ✅ fix-ci.ps1 script
+1. ✅ scripts/fix-ci.ps1 script
 2. ✅ Makefile targets
 3. ✅ CI automation
 4. ✅ GitHub templates
-5. ✅ Deployment scripts
+5. ✅ scripts/deploy.ps1 script
 
 ---
 

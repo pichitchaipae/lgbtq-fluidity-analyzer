@@ -99,15 +99,17 @@
 ## 🛠️ Developer Tools
 
 ### CI Fix Automation
-- **fix-ci.ps1:** PowerShell script for Windows developers
+- **scripts/fix-ci.ps1:** PowerShell script for Windows developers
 - **Makefile Targets:** Linux/Mac/Git Bash automation
 - **One-Command Fixes:** Resolve common CI failures instantly
 - **Interactive Mode:** Step-by-step guidance with confirmations
 - **Comprehensive Logging:** Detailed output with color-coded messages
 
 ### Development Scripts
-- **deploy-production.sh:** Automated production deployment
-- **test-docker.sh:** Docker testing and validation
+- **scripts/deploy.ps1:** PowerShell deployment script for Windows
+- **scripts/deploy-production.sh:** Automated production deployment for Linux/Mac
+- **scripts/test-docker.sh:** Docker testing and validation
+- **scripts/verify_advanced_analysis.py:** Advanced analysis verification
 - **CI Maintenance Tools:** Regular maintenance task automation
 
 ### GitHub Integration
