@@ -18,7 +18,7 @@ print("="*60)
 api_key = os.getenv("GEMINI_API_KEY")
 print(f"\n1️⃣ Checking GEMINI_API_KEY...")
 if api_key:
-    print(f"   ✅ Found: {api_key[:20]}...{api_key[-4:]}")
+    print(f"   ✅ GEMINI_API_KEY found in environment")
 else:
     print(f"   ❌ Not found in environment")
     exit(1)
