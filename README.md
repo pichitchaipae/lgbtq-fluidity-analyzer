@@ -46,6 +46,16 @@
 
 ---
 
+## ⚠️ Important for Contributors & AI Assistants
+
+**Working on this project?** Read these first:
+- 🔐 [Security & Secrets Management](.github/AI-ASSISTANT-INSTRUCTIONS.md) - **Critical for all contributors**
+- 🤖 [Copilot Instructions](.github/copilot-instructions.md) - For AI-assisted development
+
+**Never commit API keys, tokens, or secrets to Git!** This project has had 3 exposure incidents. Learn from them.
+
+---
+
 ## 🚀 Quick Start
 
 ### Prerequisites
@@ -90,6 +100,7 @@ That's it! 🎉
     - [🌐 **Inclusive Design**](#-inclusive-design)
     - [🚀 **Production-Ready Infrastructure**](#-production-ready-infrastructure)
     - [📊 **Advanced Analysis**](#-advanced-analysis)
+  - [⚠️ Important for Contributors \& AI Assistants](#️-important-for-contributors--ai-assistants)
   - [🚀 Quick Start](#-quick-start)
     - [Prerequisites](#prerequisites)
     - [Option 1: Docker (Recommended)](#option-1-docker-recommended)
