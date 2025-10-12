@@ -1,3 +1,5 @@
+import os
+import json
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from slowapi import Limiter
 from slowapi.util import get_remote_address
@@ -5,6 +7,7 @@ from slowapi.util import get_remote_address
 from ..schemas.analysis_v2 import AnalysisV2Request, AnalysisV2Response
 from ..services.analyzer import LGBTQAnalyzer
 from ..services.ai_interpreter import AIInterpreter, AIServiceError
+from ..services.gemini_interpreter import GeminiInterpreter, GeminiServiceError
 
 router = APIRouter(prefix="/v2/analysis", tags=["analysis_v2"])
 limiter = Limiter(key_func=get_remote_address)
@@ -12,11 +15,33 @@ limiter = Limiter(key_func=get_remote_address)
 def get_analyzer() -> LGBTQAnalyzer:
     return LGBTQAnalyzer()
 
-def get_ai_interpreter() -> AIInterpreter:
-    try:
-        return AIInterpreter()
-    except ValueError as exc:
-        # This will be caught and handled in the endpoint
+def get_ai_interpreter():
+    """
+    Returns AI interpreter based on AI_PROVIDER environment variable.
+    Supports: 'gemini' (default, free forever) or 'openai'
+    """
+    ai_provider = os.getenv("AI_PROVIDER", "gemini").lower()
+    
+    if ai_provider == "gemini":
+        try:
+            return GeminiInterpreter()
+        except ValueError:
+            # Gemini key not set, try OpenAI as fallback
+            try:
+                return AIInterpreter()
+            except ValueError:
+                return None
+    elif ai_provider == "openai":
+        try:
+            return AIInterpreter()
+        except ValueError:
+            # OpenAI key not set, try Gemini as fallback
+            try:
+                return GeminiInterpreter()
+            except ValueError:
+                return None
+    else:
+        # Unknown provider, return None
         return None
 
 @router.post("", response_model=AnalysisV2Response)
@@ -41,17 +66,20 @@ async def analyze_dataset(
 
     ai_interpretation = None
     privacy_notice = "AI interpretation not requested. All calculations performed locally."
+    ai_provider = os.getenv("AI_PROVIDER", "gemini")
 
     if payload.ai_insights:
         if not ai_interpreter:
             # AI service is not configured on the server
-            ai_interpretation = "AI service is not available. Please contact the administrator."
+            ai_interpretation = "AI service is not available. Please set GEMINI_API_KEY or OPENAI_API_KEY environment variable."
             privacy_notice = "AI service not configured. All calculations performed locally."
         else:
             try:
-                ai_interpretation = ai_interpreter.get_interpretation(anova_results, payload.language)
-                privacy_notice = "AI insights generated. Only aggregated, non-identifiable statistical summaries were sent to the AI service for interpretation."
-            except AIServiceError as e:
+                # Convert anova_results to JSON string for caching
+                anova_results_str = json.dumps(anova_results)
+                ai_interpretation = ai_interpreter.get_interpretation(anova_results_str, payload.language)
+                privacy_notice = f"AI insights generated using {ai_provider.upper()}. Only aggregated, non-identifiable statistical summaries were sent to the AI service for interpretation."
+            except (AIServiceError, GeminiServiceError) as e:
                 # Fallback if the AI service fails
                 ai_interpretation = f"AI interpretation failed: {e}. Displaying statistical results only."
                 privacy_notice = "An error occurred with the AI service. No data was sent."

@@ -11,3 +11,4 @@ scipy==1.14.0
 statsmodels==0.14.2
 openai==1.37.0
 slowapi==0.1.9
+google-generativeai==0.8.5
