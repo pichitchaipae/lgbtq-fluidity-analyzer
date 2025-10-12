@@ -564,9 +564,9 @@ const SectionCard = ({
   description: string;
   children: React.ReactNode;
 }) => (
-  <section className="rounded-3xl border border-pride-200 bg-white/75 p-6 shadow-lg backdrop-blur">
-    <header className="mb-4">
-      <h2 className="text-xl font-semibold text-pride-800">{title}</h2>
+  <section className="rounded-3xl border border-pride-200 bg-white/75 p-8 shadow-lg backdrop-blur">
+    <header className="mb-6">
+      <h2 className="text-2xl font-semibold text-pride-800">{title}</h2>
       <p className="text-sm text-pride-600">{description}</p>
     </header>
     {children}
@@ -848,7 +848,7 @@ function App() {
   };
 
   return (
-    <div className="mx-auto flex min-h-screen max-w-5xl flex-col gap-6 p-6">
+    <div className="mx-auto flex min-h-screen max-w-7xl flex-col gap-6 p-6">
       {showAdvancedAnalysis && (
         <AdvancedAnalysisDialog
           onCancel={() => setShowAdvancedAnalysis(false)}
