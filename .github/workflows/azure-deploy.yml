@@ -121,6 +121,9 @@ jobs:
               --name lgbtq-backend \
               --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
               --image ${{ env.CONTAINER_REGISTRY }}/${{ github.repository_owner }}/${{ env.BACKEND_IMAGE }}:latest \
+              --registry-server ${{ env.CONTAINER_REGISTRY }} \
+              --registry-username ${{ github.actor }} \
+              --registry-password ${{ secrets.GITHUB_TOKEN }} \
               --set-env-vars \
                 AI_PROVIDER=gemini \
                 GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }} \
@@ -166,6 +169,9 @@ jobs:
               --name lgbtq-frontend \
               --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
               --image ${{ env.CONTAINER_REGISTRY }}/${{ github.repository_owner }}/${{ env.FRONTEND_IMAGE }}:latest \
+              --registry-server ${{ env.CONTAINER_REGISTRY }} \
+              --registry-username ${{ github.actor }} \
+              --registry-password ${{ secrets.GITHUB_TOKEN }} \
               --set-env-vars \
                 BACKEND_URL=https://${BACKEND_FQDN} \
                 REACT_APP_API_URL=https://${BACKEND_FQDN}
