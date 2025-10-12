@@ -11,13 +11,13 @@
 
 GitHub Secret Scanning detected **TWO** Google API keys publicly exposed in documentation files:
 
-### Key 1 (OLD - From .history exposure):
-- **Key:** `AIzaSyB9dKdmhUFXzZ3-WIVmogqZ6frOaTpO5E4`
+### Key 1 (OLD - From .history exposure)
+- **Key:** `AIzaSyB9dKdmhUFXzZ3...` (redacted - revoked)
 - **Project:** gen-lang-client-0589294331 (lgbtq)
 - **Status:** 🔴 MUST BE REVOKED IMMEDIATELY
 
-### Key 2 (NEW - Replacement key also exposed):
-- **Key:** `AIzaSyA_lnw5V8kjKTtpmOv9gj4_bhasknyXNOg`
+### Key 2 (NEW - Replacement key also exposed)
+- **Key:** `AIzaSyA_lnw5V8kjK...` (redacted - revoked)
 - **Project:** gen-lang-client-0589294331 (lgbtq)
 - **Status:** 🔴 MUST BE REVOKED IMMEDIATELY
 
