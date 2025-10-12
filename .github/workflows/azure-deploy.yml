@@ -1,0 +1,156 @@
+name: Deploy to Azure Container Apps
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - production
+          - staging
+  push:
+    branches:
+      - main
+    paths:
+      - 'backend/**'
+      - 'frontend/**'
+      - '.github/workflows/azure-deploy.yml'
+
+env:
+  AZURE_RESOURCE_GROUP: lgbtq-fluidity-analyzer
+  AZURE_LOCATION: southeastasia
+  BACKEND_IMAGE: lgbtq-backend
+  FRONTEND_IMAGE: lgbtq-frontend
+  CONTAINER_REGISTRY: ghcr.io
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.CONTAINER_REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push Backend image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          push: true
+          tags: |
+            ${{ env.CONTAINER_REGISTRY }}/${{ github.repository_owner }}/${{ env.BACKEND_IMAGE }}:latest
+            ${{ env.CONTAINER_REGISTRY }}/${{ github.repository_owner }}/${{ env.BACKEND_IMAGE }}:${{ github.sha }}
+          cache-from: type=registry,ref=${{ env.CONTAINER_REGISTRY }}/${{ github.repository_owner }}/${{ env.BACKEND_IMAGE }}:buildcache
+          cache-to: type=registry,ref=${{ env.CONTAINER_REGISTRY }}/${{ github.repository_owner }}/${{ env.BACKEND_IMAGE }}:buildcache,mode=max
+
+      - name: Build and push Frontend image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          push: true
+          tags: |
+            ${{ env.CONTAINER_REGISTRY }}/${{ github.repository_owner }}/${{ env.FRONTEND_IMAGE }}:latest
+            ${{ env.CONTAINER_REGISTRY }}/${{ github.repository_owner }}/${{ env.FRONTEND_IMAGE }}:${{ github.sha }}
+          cache-from: type=registry,ref=${{ env.CONTAINER_REGISTRY }}/${{ github.repository_owner }}/${{ env.FRONTEND_IMAGE }}:buildcache
+          cache-to: type=registry,ref=${{ env.CONTAINER_REGISTRY }}/${{ github.repository_owner }}/${{ env.FRONTEND_IMAGE }}:buildcache,mode=max
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Create Resource Group
+        run: |
+          az group create \
+            --name ${{ env.AZURE_RESOURCE_GROUP }} \
+            --location ${{ env.AZURE_LOCATION }}
+
+      - name: Create Container Apps Environment
+        run: |
+          az containerapp env create \
+            --name lgbtq-env \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --location ${{ env.AZURE_LOCATION }}
+
+      - name: Deploy Backend Container App
+        run: |
+          az containerapp create \
+            --name lgbtq-backend \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --environment lgbtq-env \
+            --image ${{ env.CONTAINER_REGISTRY }}/${{ github.repository_owner }}/${{ env.BACKEND_IMAGE }}:latest \
+            --target-port 8000 \
+            --ingress external \
+            --registry-server ${{ env.CONTAINER_REGISTRY }} \
+            --registry-username ${{ github.actor }} \
+            --registry-password ${{ secrets.GITHUB_TOKEN }} \
+            --env-vars \
+              AI_PROVIDER=gemini \
+              GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }} \
+              OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} \
+            --cpu 0.5 \
+            --memory 1.0Gi \
+            --min-replicas 1 \
+            --max-replicas 3
+
+      - name: Deploy Frontend Container App
+        run: |
+          BACKEND_URL=$(az containerapp show \
+            --name lgbtq-backend \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --query properties.configuration.ingress.fqdn \
+            -o tsv)
+          
+          az containerapp create \
+            --name lgbtq-frontend \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --environment lgbtq-env \
+            --image ${{ env.CONTAINER_REGISTRY }}/${{ github.repository_owner }}/${{ env.FRONTEND_IMAGE }}:latest \
+            --target-port 80 \
+            --ingress external \
+            --registry-server ${{ env.CONTAINER_REGISTRY }} \
+            --registry-username ${{ github.actor }} \
+            --registry-password ${{ secrets.GITHUB_TOKEN }} \
+            --env-vars \
+              REACT_APP_API_URL=https://${BACKEND_URL} \
+            --cpu 0.25 \
+            --memory 0.5Gi \
+            --min-replicas 1 \
+            --max-replicas 2
+
+      - name: Get Application URLs
+        run: |
+          BACKEND_URL=$(az containerapp show \
+            --name lgbtq-backend \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --query properties.configuration.ingress.fqdn \
+            -o tsv)
+          
+          FRONTEND_URL=$(az containerapp show \
+            --name lgbtq-frontend \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --query properties.configuration.ingress.fqdn \
+            -o tsv)
+          
+          echo "🚀 Deployment Complete!"
+          echo "Backend URL: https://${BACKEND_URL}"
+          echo "Frontend URL: https://${FRONTEND_URL}"
+          echo "API Docs: https://${BACKEND_URL}/docs"

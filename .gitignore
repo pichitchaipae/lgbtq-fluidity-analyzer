@@ -21,6 +21,9 @@ ENV/
 # Local History (VS Code extension - contains sensitive data!)
 .history/
 
+# Azure local secrets
+.azure-secrets.local.txt
+
 # Node.js
 node_modules/
 npm-debug.log*
