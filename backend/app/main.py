@@ -3,13 +3,20 @@ from __future__ import annotations
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
 
-from .api.routes import router as analysis_router
+from .api.routes import router as analysis_router_v1
+from .api.routes_v2 import router as analysis_router_v2, limiter
 from .core.config import get_settings
 
 settings = get_settings()
 
 app = FastAPI(title=settings.app_name)
+
+# Add rate limiting
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 app.add_middleware(
     CORSMiddleware,
@@ -19,7 +26,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(analysis_router, prefix=settings.api_v1_str)
+# Include routers
+app.include_router(analysis_router_v1, prefix=settings.api_v1_str)
+app.include_router(analysis_router_v2, prefix="/api")
 
 
 @app.get("/health", tags=["health"])

@@ -1,9 +1,14 @@
 """Business logic for LGBTQ+ sexual fluidity analysis."""
 from __future__ import annotations
 
+import pandas as pd
+import statsmodels.api as sm
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import Dict, List, Tuple
+from scipy.stats import levene, shapiro
+from statsmodels.formula.api import ols
+from statsmodels.stats.multicomp import pairwise_tukeyhsd
+from typing import Any, Dict, List, Tuple
 
 
 @dataclass(frozen=True)
@@ -212,3 +217,97 @@ class LGBTQAnalyzer:
             "Add Health Study. University of North Carolina at Chapel Hill.",
             "Russell, S. T. & Fish, J. N. (2016). Mental Health in LGBT Youth. Annual Review of Clinical Psychology, 12, 465-487.",
         ]
+
+    def analyze_two_way_anova(self, dataset: List[Dict[str, int]]) -> Dict[str, Any]:
+        """
+        Performs a Two-Way ANOVA analysis on a dataset of survey responses.
+        """
+        if len(dataset) < 30:
+            return {
+                "error": "Small sample size",
+                "message": "A sample size of at least 30 is recommended for reliable ANOVA results.",
+                "recommendation": "Collect more data for robust analysis."
+            }
+
+        df = self._prepare_anova_dataframe(dataset)
+
+        # Fit the ANOVA model
+        model = ols('fluidity_score ~ C(media_group) * C(social_group)', data=df).fit()
+        anova_table = sm.stats.anova_lm(model, typ=2)
+
+        # Assumption Testing
+        residuals = model.resid
+        # Correctly prepare samples for Levene's test by grouping scores
+        samples_for_levene = [
+            group['fluidity_score'].values
+            for name, group in df.groupby(['media_group', 'social_group'], observed=False)
+        ]
+        # Filter out empty groups which can cause errors in Levene's test
+        samples_for_levene = [s for s in samples_for_levene if len(s) > 1]
+
+        if len(samples_for_levene) > 1:
+            levene_stat, levene_p = levene(*samples_for_levene)
+            levene_test = {"statistic": levene_stat, "p_value": levene_p}
+        else:
+            # Cannot perform test with one or zero groups
+            levene_test = {"statistic": float('nan'), "p_value": float('nan')}
+
+        shapiro_test = shapiro(residuals)
+
+        # Post-hoc Test (Tukey HSD)
+        tukey_groups = df['media_group'].astype(str) + " & " + df['social_group'].astype(str)
+        tukey_results = pairwise_tukeyhsd(endog=df['fluidity_score'], groups=tukey_groups, alpha=0.05)
+
+        return {
+            "anova_table": self._format_anova_table(anova_table),
+            "assumption_tests": {
+                "levene": levene_test,
+                "shapiro": {"statistic": shapiro_test.statistic, "p_value": shapiro_test.pvalue},
+            },
+            "post_hoc_test": str(tukey_results),
+            "sample_size_info": self._get_group_sample_sizes(df),
+            "visualizations": self._prepare_visualizations(df),
+        }
+
+    def _prepare_anova_dataframe(self, dataset: List[Dict[str, int]]) -> pd.DataFrame:
+        """Prepares a pandas DataFrame for ANOVA analysis."""
+        df = pd.DataFrame(dataset)
+
+        # Calculate factor scores
+        df['media_score'] = df['media1'] + df['media2']
+        df['social_score'] = df['family2'] + df['family3'] + df['school1']
+
+        # Calculate overall fluidity score (dependent variable)
+        df['fluidity_score'] = df.apply(lambda row: self._calculate_weighted_score(self._calculate_section_scores(row.to_dict())), axis=1)
+
+        # Create factor groups
+        df['media_group'] = pd.cut(df['media_score'], bins=[-1, 2, 4, 6], labels=['Low', 'Medium', 'High'])
+        df['social_group'] = pd.cut(df['social_score'], bins=[-1, 2, 4, 6], labels=['Low', 'Medium', 'High'])
+
+        return df
+
+    def _format_anova_table(self, anova_table: pd.DataFrame) -> Dict[str, Dict[str, float]]:
+        """Formats the ANOVA table into a more JSON-friendly dictionary."""
+        # Calculate eta-squared
+        anova_table['eta_sq'] = anova_table[:-1]['sum_sq'] / sum(anova_table['sum_sq'])
+
+        # Rename columns for clarity
+        anova_table.rename(columns={'sum_sq': 'sum_of_squares', 'PR(>F)': 'p_value'}, inplace=True)
+
+        return anova_table.to_dict('index')
+
+    def _get_group_sample_sizes(self, df: pd.DataFrame) -> Dict[str, int]:
+        """Gets the sample size for each group combination."""
+        return df.groupby(['media_group', 'social_group'], observed=False).size().to_dict()
+
+    def _prepare_visualizations(self, df: pd.DataFrame) -> Dict[str, Any]:
+        """Prepares data for frontend visualizations."""
+        interaction_plot_data = df.groupby(['media_group', 'social_group'], observed=False)['fluidity_score'].mean().unstack().to_dict('index')
+
+        group_means_data = df.groupby('media_group', observed=False)['fluidity_score'].mean().to_dict()
+        group_means_data.update(df.groupby('social_group', observed=False)['fluidity_score'].mean().to_dict())
+
+        return {
+            "interaction_plot": interaction_plot_data,
+            "group_means": group_means_data
+        }

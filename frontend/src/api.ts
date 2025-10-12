@@ -1,15 +1,23 @@
 import axios from "axios";
 
-import type { AnalysisResponse, SurveyAnswers } from "./types";
+import type { AnalysisResponse, AnalysisRequest, AnalysisV2Request, AnalysisV2Response } from "./types";
 
 // Use relative path when in production (nginx will proxy to backend)
 // Use localhost:8000 for local development
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL ?? "/api/v1",
+const apiClient = axios.create({
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000',
   timeout: 10000,
+  headers: {
+    'Content-Type': 'application/json',
+  },
 });
 
-export const analyzeSurvey = async (answers: SurveyAnswers): Promise<AnalysisResponse> => {
-  const { data } = await api.post<AnalysisResponse>('/analysis', answers);
+export const analyzeSurvey = async (answers: AnalysisRequest): Promise<AnalysisResponse> => {
+  const { data } = await apiClient.post<AnalysisResponse>('/api/v1/analysis', answers);
+  return data;
+};
+
+export const analyzeDatasetV2 = async (payload: AnalysisV2Request): Promise<AnalysisV2Response> => {
+  const { data } = await apiClient.post<AnalysisV2Response>('/api/v2/analysis', payload);
   return data;
 };
