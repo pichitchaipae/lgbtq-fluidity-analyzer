@@ -77,7 +77,136 @@ GEMINI_API_KEY=${GEMINI_API_KEY}
 
 ---
 
-## 📁 File Organization Rules
+## � Consistency Rules
+
+**CRITICAL**: Every change must maintain consistency across the entire project.
+
+### When to Check for Consistency
+
+**ALWAYS after**:
+- Creating ANY new file (.md, .py, .js, .ts, etc.)
+- Modifying ANY existing file
+- Moving or renaming files
+- Changing API endpoints
+- Updating environment variables
+- Modifying workflows
+- Changing function signatures
+- Adding new features
+
+### What to Check
+
+#### 1. Documentation Consistency
+
+**After creating/modifying docs:**
+- [ ] Check ALL related documentation files
+- [ ] Update outdated instructions in other docs
+- [ ] Verify cross-references are still valid
+- [ ] Ensure terminology is consistent
+- [ ] Update README if feature visibility changes
+
+**Example**:
+```
+Created: docs/deployment/GITHUB-SECRETS-SETUP.md
+Must check:
+- docs/deployment/AZURE-DEPLOYMENT.md (mentions secrets?)
+- docs/deployment/AZURE-SETUP-COMPLETE.md (secret instructions?)
+- README.md (quick start mentions secrets?)
+- .github/workflows/azure-deploy.yml (uses same secret names?)
+```
+
+#### 2. Code Consistency
+
+**After creating/modifying code:**
+- [ ] Check similar files use same patterns
+- [ ] Verify naming conventions match existing code
+- [ ] Ensure import styles are consistent
+- [ ] Check error handling follows project patterns
+- [ ] Update all call sites if signature changed
+- [ ] Update tests to match changes
+
+**Example**:
+```
+Changed: backend/app/api/v1/chat.py - new endpoint
+Must check:
+- frontend/src/api/chat.ts (calling endpoint?)
+- backend/app/tests/test_chat.py (tests updated?)
+- docs/api/endpoints.md (documented?)
+- README.md (example usage?)
+```
+
+#### 3. Configuration Consistency
+
+**After modifying config:**
+- [ ] Check all environments use same variables
+- [ ] Update .env.example if real .env changed
+- [ ] Verify Docker configs match
+- [ ] Check workflow files use same names
+- [ ] Update setup guides
+
+**Example**:
+```
+Changed: backend/.env (added NEW_API_KEY)
+Must check:
+- backend/.env.example (add NEW_API_KEY=placeholder)
+- docker-compose.yml (pass NEW_API_KEY?)
+- .github/workflows/*.yml (needs in secrets?)
+- docs/deployment/*.md (setup instructions?)
+```
+
+### How to Find Related Files
+
+**Use these commands**:
+
+```bash
+# Find all files mentioning a specific term
+grep -r "old_endpoint_name" . --exclude-dir={node_modules,.git,.venv,venv}
+
+# Find all documentation files
+find docs -name "*.md"
+
+# Find all Python files with similar names
+find . -name "*chat*.py"
+
+# Find all files modified in same feature area
+git log --name-only --pretty=format: -- backend/app/api/ | sort -u
+```
+
+### Consistency Checklist
+
+**Before ANY commit:**
+
+1. [ ] **Documentation**: All docs referencing changed items updated?
+2. [ ] **Code**: All similar code files follow same patterns?
+3. [ ] **Tests**: Tests updated to match code changes?
+4. [ ] **Config**: All config files consistent?
+5. [ ] **Frontend**: If backend changed, frontend updated?
+6. [ ] **Backend**: If frontend changed, backend handles it?
+7. [ ] **Workflows**: CI/CD updated if deployment changed?
+8. [ ] **README**: Quick start still accurate?
+9. [ ] **Examples**: Code examples still work?
+10. [ ] **Comments**: Code comments still accurate?
+
+### Common Inconsistencies to Avoid
+
+❌ **Bad Examples**:
+- README says "run npm start", but package.json has "npm run dev"
+- Docs mention old secret name, but workflow uses new name
+- Frontend calls `/api/chat`, but backend has `/api/v1/chat`
+- Some files use `camelCase`, others use `snake_case`
+- One doc says "Azure for Students", another says "Azure Free Tier"
+- Function renamed but old name still in comments/docs
+
+✅ **Good Practice**:
+- All docs use exact same command syntax
+- Secret names match across docs, workflows, .env.example
+- API endpoints match frontend calls exactly
+- Consistent naming across all files of same type
+- Terminology consistent across all documentation
+- Comments and docs updated when code changes
+
+---
+
+## �📁 File Organization Rules
 
 ### Documentation File Structure
 
@@ -179,15 +308,33 @@ For production:
 
 Before suggesting any commit, verify:
 
+### Security Checks:
 - [ ] No API keys in changed files
 - [ ] No passwords or tokens visible
 - [ ] All examples use placeholders
 - [ ] Documentation references safe locations
 - [ ] `.gitignore` includes secret file patterns
 - [ ] User reminded to keep secrets safe
+
+### File Organization Checks:
 - [ ] **New .md files created in correct docs/ subdirectory**
 - [ ] **No random .md files left in root directory**
 - [ ] **All documentation cross-references updated**
+
+### Consistency Checks:
+- [ ] **All related documentation reviewed for consistency**
+- [ ] **Outdated references updated across project**
+- [ ] **Code patterns consistent across similar files**
+- [ ] **Naming conventions consistent everywhere**
+- [ ] **Related files that reference changes are updated**
+
+**Examples of consistency checks:**
+- New deployment guide? → Check all deployment docs match
+- Changed API endpoint? → Update docs + frontend + backend
+- New secret added? → Update all setup guides + README
+- Modified workflow? → Update deployment guides + troubleshooting
+- Changed function signature? → Update all call sites + tests + docs
+- New component added? → Ensure consistent naming with existing components
 
 **Command to check**:
 ```bash
@@ -196,6 +343,9 @@ git diff --cached | grep -i "api[_-]key\|secret\|password\|token" | grep -v "pla
 
 # Check for .md files in root that should be moved
 git ls-files "*.md" | grep -v "README\|CONTRIBUTING\|CODE_OF_CONDUCT\|SECURITY\|LICENSE"
+
+# Find all files that might reference what you changed
+grep -r "pattern_you_changed" . --exclude-dir={node_modules,.git,.venv,venv}
 ```
 
 ---

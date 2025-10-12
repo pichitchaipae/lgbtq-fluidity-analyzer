@@ -76,16 +76,26 @@ az ad sp create-for-rbac \
 
 Go to: `https://github.com/{YOUR_USERNAME}/lgbtq-fluidity-analyzer/settings/secrets/actions`
 
-Add these secrets:
+Add these **2 secrets**:
 
 | Secret Name | Value | Description |
 |-------------|-------|-------------|
-| `AZURE_CLIENT_ID` | From `clientId` | Service Principal ID |
-| `AZURE_TENANT_ID` | From `tenantId` | Azure AD Tenant ID |
-| `AZURE_SUBSCRIPTION_ID` | From `subscriptionId` | Azure Subscription ID |
-| `AZURE_CLIENT_SECRET` | From `clientSecret` | Service Principal Secret |
+| `AZURE_CREDENTIALS` | JSON with clientId, clientSecret, subscriptionId, tenantId | Service Principal credentials (JSON format) |
 | `GEMINI_API_KEY` | Your Gemini API key | AI Provider Key |
-| `OPENAI_API_KEY` | Your OpenAI key (optional) | Alternative AI Provider |
+
+**AZURE_CREDENTIALS format**:
+```json
+{
+  "clientId": "[YOUR_CLIENT_ID]",
+  "clientSecret": "[YOUR_CLIENT_SECRET]",
+  "subscriptionId": "[YOUR_SUBSCRIPTION_ID]",
+  "tenantId": "[YOUR_TENANT_ID]"
+}
+```
+
+Get these values from running `scripts/azure-setup.ps1` or from `.azure-secrets.local.txt` (gitignored).
+
+> **📚 Detailed Setup Guide**: See `docs/deployment/GITHUB-SECRETS-SETUP.md` for step-by-step instructions.
 
 #### Step 3: Trigger Deployment
 

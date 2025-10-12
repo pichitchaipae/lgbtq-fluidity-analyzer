@@ -14,37 +14,32 @@
 
 Go to: **https://github.com/pichitchaipae/lgbtq-fluidity-analyzer/settings/secrets/actions**
 
-Click **"New repository secret"** and add each of these:
+Click **"New repository secret"** and add each of these **2 secrets**:
 
-### 1. AZURE_CLIENT_ID
-```
-[Value provided by azure-setup.ps1 script]
-```
+### 1. AZURE_CREDENTIALS
 
-### 2. AZURE_TENANT_ID
-```
-[Value provided by azure-setup.ps1 script]
-```
+**Format**: JSON (paste the entire block below with your values)
 
-### 3. AZURE_SUBSCRIPTION_ID
-```
-[Value provided by azure-setup.ps1 script]
+```json
+{
+  "clientId": "[YOUR_CLIENT_ID]",
+  "clientSecret": "[YOUR_CLIENT_SECRET]",
+  "subscriptionId": "[YOUR_SUBSCRIPTION_ID]",
+  "tenantId": "[YOUR_TENANT_ID]"
+}
 ```
 
-### 4. AZURE_CLIENT_SECRET
+**Where to find values**: `.azure-secrets.local.txt` (gitignored) or output from `azure-setup.ps1`
+
+### 2. GEMINI_API_KEY
+
 ```
-[Value provided by azure-setup.ps1 script - KEEP THIS SECRET]
+[YOUR_GEMINI_API_KEY]
 ```
 
-### 5. GEMINI_API_KEY
-```
-[Your current Gemini API key]
-```
+**Where to find value**: `.azure-secrets.local.txt` or `backend/.env`
 
-### 6. OPENAI_API_KEY (Optional)
-```
-[Your OpenAI key from .env if you want to support it]
-```
+> **📚 Detailed Instructions**: See `docs/deployment/GITHUB-SECRETS-SETUP.md` for step-by-step guide.
 
 ---
 

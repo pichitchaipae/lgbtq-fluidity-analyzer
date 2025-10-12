@@ -39,40 +39,40 @@ cd "c:\Users\ASUS\Downloads\LGBTQ+ Sexual Fluidity Analysis Tool"
 
 ### Step 3: Add GitHub Secrets
 
-After running the script, it will display secrets like this:
+After running the script, you'll have values in `.azure-secrets.local.txt` (gitignored).
+
+**You need to add 2 secrets to GitHub:**
+
+#### Secret 1: AZURE_CREDENTIALS
+
+**Format**: JSON (combine the 4 Azure values into one)
+
+```json
+{
+  "clientId": "[YOUR_AZURE_CLIENT_ID]",
+  "clientSecret": "[YOUR_AZURE_CLIENT_SECRET]",
+  "subscriptionId": "[YOUR_AZURE_SUBSCRIPTION_ID]",
+  "tenantId": "[YOUR_AZURE_TENANT_ID]"
+}
+```
+
+#### Secret 2: GEMINI_API_KEY
 
 ```
-Secret Name: AZURE_CLIENT_ID
-Value: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-
-Secret Name: AZURE_TENANT_ID
-Value: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-
-Secret Name: AZURE_SUBSCRIPTION_ID
-Value: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-
-Secret Name: AZURE_CLIENT_SECRET
-Value: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-
-Secret Name: GEMINI_API_KEY
-Value: [Your current key]
+[YOUR_GEMINI_API_KEY]
 ```
 
 **Add these to GitHub:**
 
 1. Go to: https://github.com/pichitchaipae/lgbtq-fluidity-analyzer/settings/secrets/actions
 
-2. Click "New repository secret" for each one
+2. Click "New repository secret"
 
-3. Copy and paste the name and value exactly
+3. For `AZURE_CREDENTIALS`: Paste the entire JSON block (with your actual values from `.azure-secrets.local.txt`)
 
-**Your secrets should be:**
-- ✅ AZURE_CLIENT_ID (from script output)
-- ✅ AZURE_TENANT_ID (from script output)
-- ✅ AZURE_SUBSCRIPTION_ID (from script output)
-- ✅ AZURE_CLIENT_SECRET (from script output - KEEP SECRET)
-- ✅ GEMINI_API_KEY (your current Gemini API key - check .azure-secrets.local.txt)
-- ⚠️ OPENAI_API_KEY (optional - if you want to support OpenAI too)
+4. For `GEMINI_API_KEY`: Paste your API key (from `.azure-secrets.local.txt` or `backend/.env`)
+
+> **📚 Need Help?** See detailed guide: `docs/deployment/GITHUB-SECRETS-SETUP.md`
 
 ---
 

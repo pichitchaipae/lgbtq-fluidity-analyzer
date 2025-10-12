@@ -103,12 +103,20 @@ API Docs: https://lgbtq-backend.{random}.southeastasia.azurecontainerapps.io/doc
 
 ### Common Issues and Solutions
 
-#### Issue: "AZURE_CLIENT_SECRET not found"
-**Solution**: Add the secret to GitHub:
+#### Issue: "AZURE_CREDENTIALS not found" or "Login failed"
+**Solution**: Add the AZURE_CREDENTIALS secret to GitHub in JSON format:
+```json
+{
+  "clientId": "[YOUR_CLIENT_ID]",
+  "clientSecret": "[YOUR_CLIENT_SECRET]",
+  "subscriptionId": "[YOUR_SUBSCRIPTION_ID]",
+  "tenantId": "[YOUR_TENANT_ID]"
+}
 ```
-Secret Name: AZURE_CLIENT_SECRET
-Secret Value: [Check .azure-secrets.local.txt file]
-```
+
+Check values in `.azure-secrets.local.txt` file.
+
+> **📚 Detailed Guide**: See `docs/deployment/GITHUB-SECRETS-SETUP.md`
 
 #### Issue: "Image pull failed"
 **Solution**: GitHub Container Registry needs to be public or properly authenticated

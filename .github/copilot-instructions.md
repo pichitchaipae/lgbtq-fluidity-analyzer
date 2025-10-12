@@ -80,6 +80,27 @@ Never (unsafe):
 3. ✅ Move root .md files to docs/ when organizing
 4. ✅ Update any references/links after moving
 
+## Consistency Rules
+
+**CRITICAL: After creating/modifying ANY file:**
+1. ✅ Review ALL related documentation for consistency
+2. ✅ Update outdated references across the project
+3. ✅ Check code patterns match across all files
+4. ✅ Verify naming conventions are consistent
+5. ✅ Update related files that reference changed content
+
+**Examples:**
+- Created new deployment guide? → Update other deployment docs + README
+- Changed API endpoint? → Update all docs that reference it + frontend code
+- Added new secret? → Update all setup guides + security docs
+- Modified workflow? → Update deployment guides + troubleshooting docs
+
+**Never leave inconsistencies:**
+- ❌ Old instructions in some docs, new in others
+- ❌ Different code patterns in similar files
+- ❌ Broken links or outdated references
+- ❌ Inconsistent naming/terminology
+
 ## Quick Checks Before Suggesting Code
 
 - [ ] No hardcoded secrets?
@@ -88,6 +109,9 @@ Never (unsafe):
 - [ ] User reminded about `.env` setup?
 - [ ] **New .md files created in correct location (docs/ folder)?**
 - [ ] **Links updated if files were moved?**
+- [ ] **All related docs checked for consistency?**
+- [ ] **Code patterns consistent across project?**
+- [ ] **References to changed content updated everywhere?**
 
 ## More Information
 
