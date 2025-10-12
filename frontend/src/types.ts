@@ -70,3 +70,21 @@ export interface AnalysisV2Response {
   visualizations: Visualizations;
   privacy_notice: string;
 }
+
+// Types for Chatbot
+export interface ChatMessage {
+  role: 'user' | 'assistant';
+  content: string;
+}
+
+export interface ChatRequest {
+  survey_result: SurveyAnswers;
+  message: string;
+  conversation_history: ChatMessage[];
+  language: 'th' | 'en';
+}
+
+export interface ChatResponse {
+  message: string;
+  suggestions: string[];
+}

@@ -1,6 +1,13 @@
 import axios from "axios";
 
-import type { AnalysisResponse, AnalysisRequest, AnalysisV2Request, AnalysisV2Response } from "./types";
+import type { 
+  AnalysisResponse, 
+  AnalysisRequest, 
+  AnalysisV2Request, 
+  AnalysisV2Response,
+  ChatRequest,
+  ChatResponse 
+} from "./types";
 
 // Use relative path when in production (nginx will proxy to backend)
 // Use localhost:8000 for local development
@@ -19,5 +26,10 @@ export const analyzeSurvey = async (answers: AnalysisRequest): Promise<AnalysisR
 
 export const analyzeDatasetV2 = async (payload: AnalysisV2Request): Promise<AnalysisV2Response> => {
   const { data } = await apiClient.post<AnalysisV2Response>('/api/v2/analysis', payload);
+  return data;
+};
+
+export const chatbot = async (payload: ChatRequest): Promise<ChatResponse> => {
+  const { data } = await apiClient.post<ChatResponse>('/api/chatbot', payload);
   return data;
 };

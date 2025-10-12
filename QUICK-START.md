@@ -243,8 +243,34 @@ kubectl delete all --all -n lgbtq-analysis
 4. 🚀 **Deploy and test**
 5. 📊 **Monitor logs and metrics**
 
-## 📚 Full Documentation
+## � NEW: AI Chatbot Feature
 
+We've added an **AI Chatbot** that provides instant insights about your survey results!
+
+### Key Features
+- ✅ **Works with just 1 submission** (no 30-sample minimum!)
+- 🤖 Conversational AI powered by Google Gemini
+- 🌐 Bilingual support (Thai/English)
+- 💡 Dynamic follow-up suggestions
+- 🔒 Privacy-focused (no permanent storage)
+
+### How to Use
+1. Complete the survey and submit
+2. Scroll down below your results
+3. Look for **💬 Chat with AI Assistant**
+4. Ask questions about your results!
+
+### Example Questions
+- "What do my scores mean?"
+- "คะแนนของฉันหมายความว่าอย่างไร?"
+- "How can I talk to my family about this?"
+- "What should I do next?"
+
+**See full chatbot documentation in `CHATBOT-USAGE.md`**
+
+## �📚 Full Documentation
+
+- **Chatbot Guide**: `CHATBOT-USAGE.md` 💬 NEW!
 - **Production Deployment**: `docs/PRODUCTION-DEPLOYMENT.md`
 - **Security Guide**: `SECURITY-INCIDENT-REPORT.md`
 - **API Documentation**: http://localhost:8000/docs (after starting)

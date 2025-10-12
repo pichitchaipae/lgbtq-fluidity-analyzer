@@ -15,6 +15,7 @@ import {
 
 import { analyzeSurvey, analyzeDatasetV2 } from "./api";
 import type { AnalysisResponse, SurveyAnswers, AnalysisV2Response, AnalysisRequest } from "./types";
+import { ChatBot } from "./components/ChatBot";
 
 type Language = "th" | "en";
 
@@ -960,6 +961,9 @@ function App() {
             {v2Result && (
               <AdvancedResultsCard result={v2Result} language={language} />
             )}
+
+            {/* Add ChatBot after results */}
+            <ChatBot surveyResult={answers} language={language} />
           </div>
         )}
       </main>
